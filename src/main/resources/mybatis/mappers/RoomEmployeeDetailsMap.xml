@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.mapper.RoomEmployeeDetailsMapper">
+ 	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
+ 	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+    <!--  ================================= -->
+    <select id="getAllDetails" resultType="RoomEmployeeDetails" >
+   	SELECT * FROM employees e INNER JOIN employees_rooms er ON e.employee_no = er.employee_no
+	INNER JOIN rooms r ON er.room_no = r.room_no 
+    </select>
+    
+    <select id="getAllDetailsNow" resultType="RoomEmployeeDetails" >
+   	SELECT * FROM employees e INNER JOIN employees_rooms er ON e.employee_no = er.employee_no
+	INNER JOIN rooms r ON er.room_no = r.room_no where er.date_out IS NULL
+    </select>
+    
+    <!-- 得到某个人是否在住 -->
+    <select id="getLivingByEmployeeNo" resultType="RoomEmployeeDetails" parameterType="string" >
+   	SELECT * FROM employees_rooms er WHERE er.employee_no = #{employeeNo} 
+	AND er.date_out IS NULL
+    </select>
+    
+    <!-- 得到某个房间在住的人-->
+    <select id="getLivingByRoomNo" resultType="RoomEmployeeDetails" parameterType="string" >
+   	SELECT * FROM employees_rooms er WHERE er.room_no = #{roomNo}
+	AND er.date_out IS NULL
+    </select>
+    
+    <!-- 得到具体细节 -->
+     <select id="getDetails" resultType="RoomEmployeeDetails" parameterType="roomEmployeeDetails">
+   SELECT * FROM employees e INNER JOIN employees_rooms er ON e.employee_no = er.employee_no
+	INNER JOIN rooms r ON er.room_no = r.room_no
+	<where>
+		<if test="roomNo != null and roomNo !='' ">
+       	and r.room_no = #{roomNo}
+       	</if>
+       	<if test="employeeNo != null and employeeNo !='' ">
+       	and er.employee_no = #{employeeNo}
+       	</if>
+       	<if test="dateOut == null or dateOut =='' ">
+       	and er.date_out IS NULL
+       	</if>	
+       		
+	</where>
+    </select>
+    
+    <insert id="addDetails" useGeneratedKeys="true" keyProperty="id" parameterType="roomEmployeeDetails">
+    	insert into
+		employees_rooms(employee_no,room_no,date_in,date_out)
+		values(#{employeeNo},#{roomNo},#{dateIn},#{dateOut})
+    </insert>
+    
+    <insert id="addDetailsByList" useGeneratedKeys="true"  parameterType="java.util.List">
+		insert into
+		employees_rooms(employee_no,room_no,date_in,date_out)
+		values 
+		 <foreach collection="list" item="e" index="i" separator=",">
+          (#{employeeNo},#{roomNo},#{dateIn},#{dateOut})
+        </foreach>		
+	</insert>
+   
+   <delete id="deleteDetails" parameterType="roomEmployeeDetails">
+        delete from employees_rooms
+		<where>
+        <if test="id != null and id !='' ">
+       	and id = #{id}
+        </if> 
+        <if test="roomNo != null and roomNo !='' ">
+       	and room_no = #{roomNo}
+        </if>
+        <if test="employeeNo != null and employeeNo !='' ">
+       	and employee_no = #{employeeNo}
+        </if>
+        <if test="dateIn != null and dateIn !='' ">
+       	and date_in = #{dateIn}
+        </if>
+        <if test="dateOut != null and dateOut !='' ">
+       	and date_out = #{dateOut}
+        </if>
+        </where>
+    </delete>
+    
+    
+    <update id="updateRoom" parameterType="room">
+    update employees_rooms
+    <set>
+        <if test="roomNo != null and roomNo !='' ">
+       	room_no = #{roomNo},
+        </if>
+        <if test="employeeNo != null and employeeNo !='' ">
+       	 employee_no = #{employeeNo},
+        </if>
+        <if test="dateIn != null and dateIn !='' ">
+       	date_in = #{dateIn},
+        </if>
+        <if test="dateOut != null and dateOut !='' ">
+       date_out = #{dateOut},
+        </if>
+    </set>
+    <where>
+    	id = #{id}
+    </where>  
+    </update>
+    
+
+</mapper>

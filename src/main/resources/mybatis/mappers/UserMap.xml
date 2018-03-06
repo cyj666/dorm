@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.mapper.UserMapper">
+ 	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
+ 	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+    
+
+	<select id="getUser" resultType="User" parameterType="user">
+		select * from users
+		<where>
+		<if test="userId != null and userId !='' ">
+       	and user_id = #{userId}
+        </if>
+        <if test="username != null and username !='' ">
+       	and username = #{username}
+        </if>
+		</where>
+	</select> 
+	
+	<select id="getUsers" resultType="User" parameterType="user"  useCache="false">
+		select * from users
+		<where>
+		<if test="userId != null and userId !='' ">
+       	and user_id = #{userId}
+        </if>
+        <if test="username != null and username !='' ">
+       	and username = #{username}
+        </if>
+		</where>
+	</select> 
+	
+	<select id="getAllUser" resultType="User" >
+		select * from users		
+	</select> 
+	
+
+	<insert id="addUser" useGeneratedKeys="true" keyProperty="user_id" parameterType="user">
+		insert into
+		users(username,password,status,locked,last_time,create_time,last_ip)
+		values(#{username},#{password},#{status},#{locked},#{lastTime},#{createTime},#{lastIp})
+	</insert>
+
+
+	<delete id="deleteUser" parameterType="user">
+        delete  from users 
+		<where>
+        <if test="userId != null and userId !='' ">
+       	and user_id = #{userId}
+        </if>
+        <if test="username != null and username !='' ">
+       	and username = #{username}
+        </if>
+        </where>
+    </delete>
+         
+    <update id="updateUser" parameterType="user">
+    update users
+    <set>
+    	<if test="username != null and username !=''">
+    	username = #{username},
+    	</if>
+    	<if test="password != null and password !=''">
+    	password = #{password},
+    	</if>
+    	<if test="status != null and status !=''">
+    	status = #{status},
+    	</if>
+    	<if test="locked != null and locked !=''">
+    	locked = #{locked},
+    	</if>
+    	<if test="credit != null and credit !=''">
+    	credit = #{credit},
+    	</if>
+    	<if test="lastVisit != null and lastVisit !=''">
+    	last_visit = #{lastVisit},
+    	</if>
+    	<if test="lastIp != null and lastIp !=''">
+    	last_ip = #{lastIp}
+    	</if>
+    </set>
+    <where>
+    	user_id =#{userId}
+    </where>  
+    </update>
+    
+    <!--================================================================================================================ -->
+    
+   
+    
+    
+</mapper>
