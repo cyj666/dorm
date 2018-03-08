@@ -6,7 +6,7 @@
  	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
  	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
 
-    
+
 
 	<select id="getUser" resultType="User" parameterType="user">
 		select * from users
@@ -70,12 +70,9 @@
     	</if>
     	<if test="locked != null and locked !=''">
     	locked = #{locked},
-    	</if>
-    	<if test="credit != null and credit !=''">
-    	credit = #{credit},
-    	</if>
-    	<if test="lastVisit != null and lastVisit !=''">
-    	last_visit = #{lastVisit},
+    	</if>   	
+    	<if test="lastTime != null and lastTime !=''">
+    	last_time = #{lastTime},
     	</if>
     	<if test="lastIp != null and lastIp !=''">
     	last_ip = #{lastIp}

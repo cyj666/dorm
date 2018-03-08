@@ -91,6 +91,16 @@
 	</div>
 	<script type="text/javascript">
 	$(function() {  
+		/*$.ajaxSetup({
+			error:function(xhr,status,error){
+				window.location.href="404"+"error="+error;
+			},
+			dataFilter:function(data,type){
+				loadDataGrid();
+					alert(type+data);
+					window.location.href="404";
+			
+		})*/
 		loadDataGrid();
     });  	
 	function employeeSearch(){

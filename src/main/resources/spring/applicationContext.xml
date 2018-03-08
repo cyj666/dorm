@@ -48,7 +48,7 @@
       <property name="shared" value="true"></property>  <!-- 当mybatis和shiro都用到ehcache时，一定要配置 -->
    </bean>
    
-   <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+   <bean id="cacheManager2" class="org.springframework.cache.ehcache.EhCacheCacheManager">
         <property name="cacheManager" ref="ehCacheManager"></property>             
     </bean>
     

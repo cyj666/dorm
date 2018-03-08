@@ -1,17 +1,31 @@
 package com.dorm.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.UnauthenticatedException;
+import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -23,6 +37,7 @@ import com.dorm.service.EmployeeService;
 import com.dorm.service.RoomEmployeeDetailsService;
 import com.dorm.service.RoomService;
 import com.dorm.service.UserService;
+import com.dorm.tool.CaptchaUtil;
 
 @Controller
 public class BaseController {
@@ -45,51 +60,17 @@ public class BaseController {
 		return "hello world"; 
 	}
 	
+
 	
-	@RequestMapping("/getUser")
+	
+	/**
+	 * 验证码实现
+	 */
+	@RequestMapping(value = "/captchaCode", method = RequestMethod.GET)
 	@ResponseBody
-	public String getUser(@RequestParam(value="id",defaultValue="1")int id,
-			@RequestParam(value="username",defaultValue="admin")String username) {
-		User user = userService.getUserById(id);
-		
-		return user.toString();
-		
+	public void captcha(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		CaptchaUtil.outputCaptcha(request, response);
 	}
-	
-	/*@RequestMapping(value="/getEmployee",produces="application/json;charset=utf-8")
-	@ResponseBody
-	public String getEmployee(/*@RequestParam(value="employeeId",defaultValue="1")int employeeId) {
-		/*List<Employee> employees = new ArrayList<>();
-		employees = employeeService.getAllEmployee();
-		for(int i=0;i<employees.size();i++) {
-			Employee employee = employees.get(i);
-			employee.setEmployeeSex("女");
-			employees.set(i, employee);
-		}
-		employeeService.updateUserByList(employees);
-		employees = employeeService.getAllEmployee();*/
-		/*List<Employee> employees = new ArrayList<>();
-		for(int i=0;i<1;i++) {
-			Employee employee = new Employee();
-			employee.setEmployeeId(6);
-			employee.setEmployeeName("王五");
-			employee.setEmployeeNo("H17078");
-			employee.setEmployeeSex("男");
-			employee.setEmployeeWorkplace("华三");
-			employee.setEmployeeJob("电工");
-			employee.setEmployeeFamily("2个小孩");
-			employees.add(employee);
-		}
-		employeeService.deleteEmployeeByList(employees);
-		employees = employeeService.getAllEmployee();*/
-		/*List<Employee> employees = new ArrayList<>();
-		String[] employeeNames = {"张三","李四"};
-		employees = employeeService.getEmployeeByNameArray(employeeNames);
-		return "员工信息："+employees.toString();
-		
-	}*/
-	
-	
 	
 	
 	@RequestMapping(value="/getDetils",produces="application/json;charset=utf-8")
@@ -113,65 +94,71 @@ public class BaseController {
 		return active;
 	}
 	
+	
 	@RequestMapping("main")
 	public String getUrl2() {
 		return "/system/main";
 	}
 	
+	//@RequiresRoles("qw")
 	@RequestMapping(value="BaseController.do",method=RequestMethod.GET)
 	public String getUrl4(@RequestParam(value="url")String url) {
 		
 		return "/system/"+url;
 	}
 	
+	 @ExceptionHandler({UnauthenticatedException.class})
+	 @ResponseStatus(value=HttpStatus.FORBIDDEN,reason="账号未登录,请先登录")
+	 @ResponseBody
+	 public ModelAndView processUnauthenticatedException(NativeWebRequest request, Exception ex) {
+	   // log.info("==========进入了异常处理方法，使用@ExceptionHandler处理异常");
+	    ModelAndView mv = new ModelAndView();
+	    mv.addObject("ex", ex);	    
+	    // 为了区分，跳转掉另一个视图
+	    mv.setViewName("error/404");
+	    return mv;
+	    }
+	
+
+	 @ExceptionHandler({UnauthorizedException.class})
+	 @ResponseStatus(value=HttpStatus.UNAUTHORIZED,reason="账号未登录,请先登录")
+	 @ResponseBody
+	 public ModelAndView processUnauthenticatedException2(NativeWebRequest request, Exception ex) {
+	   // log.info("==========进入了异常处理方法，使用@ExceptionHandler处理异常");
+	    ModelAndView mv = new ModelAndView();
+	    mv.addObject("ex", ex);	    
+	    // 为了区分，跳转掉另一个视图
+	    mv.setViewName("error/404");
+	    return mv;
+	    }
+	 
+	@RequiresUser
 	@RequestMapping(value="buss",method=RequestMethod.GET)
 	public String getUrl5(@RequestParam(value="url")String url) {
 		
 		return "/buss/"+url;
 	}
 		
+	@RequestMapping(value="login",method=RequestMethod.GET)
+	public String getUrl6() {		
+		return "/system/login";
+	}
+			
 	
-	
-	
-	@RequestMapping(value="saveUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
-	@ResponseBody
-	public String saveUser(@RequestParam(value="username")String username,
-			@RequestParam(value="password")String password,
-			@RequestParam(value="password2")String password2,
-			@RequestParam(value="status")Integer status) {
-		User user = new User();
-		String result;
-		if (!password.equals(password2)) {			
-			result = "{\"success\":false,\"msg\":\"两次密码不一致\"}";
-			return result;
-		}		
-		user.setUsername(username);
-		user.setPassword(password);
-		user.setCreateTime(new Date());
-		user.setLocked(false);
-		user.setStatus(status);
-		userService.addUser(user);
-		result = "{\"success\":true,\"msg\":\"添加成功\"}";
-		return result;
+	@RequestMapping("401")
+	public String getUrl9() {
+		return "error/401";
 	}
 	
-	@RequestMapping(value="deleteUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
-	@ResponseBody
-	public String deleteUser(@RequestParam(value="username")String username,
-			@RequestParam(value="password")String password,			
-			@RequestParam(value="status")Integer status) {
-		User user = new User();
-		String result;	
-		user.setUsername(username);
-		user.setPassword(password);
-		user.setCreateTime(new Date());
-		user.setLocked(false);
-		user.setStatus(status);
-		userService.addUser(user);
-		result = "{\"success\":true,\"msg\":\"添加成功\"}";
-		return result;
+	@RequestMapping("403")
+	public String getUrl10() {
+		return "error/403";
 	}
 	
 	
+	@RequestMapping("500")
+	public String getUrl11() {
+		return "error/500";
+	}
 	
 }

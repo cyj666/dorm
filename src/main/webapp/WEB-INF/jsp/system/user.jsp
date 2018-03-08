@@ -121,7 +121,7 @@
 	<script type="text/javascript">
 	$(function() {  
 		loadDataGrid();
-		roleTree();
+		//roleTree();
     });  	
 	function loadDataGrid(){
 		 $('#dg').datagrid({  

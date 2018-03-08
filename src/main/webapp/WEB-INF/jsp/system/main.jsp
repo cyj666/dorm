@@ -24,10 +24,11 @@
 			<tr style="height: 25px;" align="right">
 				<td style="" colspan="2">
 				<div style="background: url(${ctx}/static/image/common/top_bg.jpg) no-repeat right center; float: right;">
-				<div style="float: left; line-height: 25px; margin-left: 70px;"><span style="color: #386780">当前用户:</span> <span style="color: #FFFFFF">${username }</span>&nbsp;&nbsp;&nbsp;&nbsp; <span
-					style="color: #386780">其他:</span> <span style="color: #FFFFFF">${roleName }</span></div>
+				<div style="float: left; line-height: 25px; margin-left: 70px;">				
+				<shiro:guest><a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="openTab('用户登录','login')" plain="true">登录</a></shiro:guest>
+				<shiro:user><span style="color: #FFFFFF"><shiro:principal></shiro:principal></span></shiro:user>&nbsp;&nbsp;&nbsp;&nbsp;</div>
 				<div style="float: left; margin-left: 18px;">
-				<div style="right: 0px; bottom: 0px;"><a href="javascript:void(0);" class="easyui-menubutton" menu="#layout_north_zxMenu" iconCls="icon-exit" style="color: #FFFFFF">注销</a></div>
+				<div style="right: 0px; bottom: 0px;"><a href="javascript:void(0);" class="easyui-menubutton" menu="#layout_north_zxMenu" iconCls="icon-exit" style="color: #FFFFFF">${msg }注销</a></div>
 				<div id="layout_north_zxMenu" style="width: 100px; display: none;">
 					<div class="menu-sep"></div>
 					<div onclick="exit('loginController.do?logout','确定退出该系统吗 ?');">退出系统</div>
@@ -40,7 +41,7 @@
 				<td colspan="2">
 				<ul class="shortcut">
 					<!-- 动态生成并赋值过来 -->
-					${primaryMenuList }
+					${msg }
 				</ul>
 				</td>
 			</tr>

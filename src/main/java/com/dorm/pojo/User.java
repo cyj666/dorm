@@ -2,6 +2,10 @@ package com.dorm.pojo;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.xmlbeans.impl.xb.ltgfmt.FileDesc.Role;
 
 public class User implements Serializable{
 
@@ -17,6 +21,7 @@ public class User implements Serializable{
 	private String lastIp;
 	private Integer status;
 	private Boolean locked;
+	private Set<Role> roleSet = new HashSet<Role>();  //用户角色
 	public Integer getUserId() {
 		return userId;
 	}
@@ -71,6 +76,12 @@ public class User implements Serializable{
 		return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", createTime="
 				+ createTime + ", lastTime=" + lastTime + ", lastIp=" + lastIp + ", status=" + status + ", locked="
 				+ locked + "]";
+	}
+	public Set<Role> getRoleSet() {
+		return roleSet;
+	}
+	public void setRoleSet(Set<Role> roleSet) {
+		this.roleSet = roleSet;
 	}
 	
 	
