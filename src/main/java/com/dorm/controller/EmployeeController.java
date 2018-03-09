@@ -8,7 +8,9 @@ import java.util.List;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+
 import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.apache.shiro.web.util.WebUtils;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,11 +37,13 @@ import com.github.pagehelper.PageInfo;
 
 @Controller
 public class EmployeeController {
+	
 
 	@Autowired
 	EmployeeService employeeService;
 	
 	@RequiresUser
+	@RequiresRoles(value={"admin"})
 	@RequestMapping(value="getAllEmployee",method=RequestMethod.GET,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getAllEmployee(@RequestParam(value="page",defaultValue="1")int pageNum,
@@ -53,7 +58,7 @@ public class EmployeeController {
 	}
 	
 	 @ExceptionHandler({Exception.class})
-	// @ResponseStatus(code=HttpStatus.UNAUTHORIZED)
+	 @ResponseStatus(code=HttpStatus.UNAUTHORIZED)
 	 public String processUnauthenticatedException(ServletRequest request,ServletResponse response) {
 	   // log.info("==========进入了异常处理方法，使用@ExceptionHandler处理异常");
 	    /*ModelAndView mv = new ModelAndView();
@@ -70,7 +75,9 @@ public class EmployeeController {
 		return "index";	    
 	    }
 	
+	 
 	@RequiresUser
+	@RequiresRoles(value={"admin"})
 	@RequestMapping(value="/getEmployee",produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getEmployee(@RequestParam(value="employeeName",required=false)String employeeName,
@@ -95,7 +102,9 @@ public class EmployeeController {
 		
 	}
 	
+	
 	@RequiresUser
+	@RequiresRoles(value={"admin"})
 	@RequestMapping(value="/deleteEmployee",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String deleteEmployee(@RequestParam(value="ids")int[] ids) {
@@ -111,7 +120,9 @@ public class EmployeeController {
 		
 	}
 	
+	
 	@RequiresUser
+	@RequiresRoles(value={"admin"})
 	@RequestMapping(value="addEmployee",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String addEmployee(@RequestParam(value="employeeName")String employeeName,
@@ -135,7 +146,9 @@ public class EmployeeController {
 		return result;
 	}
 	
+	
 	@RequiresUser
+	@RequiresRoles(value={"admin"})
 	@RequestMapping(value="updateEmployee",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String updateEmployee(@RequestParam(value="employeeName")String employeeName,

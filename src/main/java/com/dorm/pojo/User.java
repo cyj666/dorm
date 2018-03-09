@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.xmlbeans.impl.xb.ltgfmt.FileDesc.Role;
+import com.dorm.pojo.Role;
 
 public class User implements Serializable{
 

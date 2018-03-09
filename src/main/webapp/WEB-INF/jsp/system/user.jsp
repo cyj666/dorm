@@ -13,8 +13,8 @@
 			<tr>
 				<th data-options="field:'ck',checkbox:true"></th>
 				<th data-options="field:'userId',width:20">ID</th>	
-				<th data-options="field:'username',width:80">账号</th>				
-				<th data-options="field:'password',width:80">密码</th>
+				<th data-options="field:'username',width:50">账号</th>				
+				<th data-options="field:'password',width:110">密码</th>
 				<th data-options="field:'createTime',width:80">创建时间</th>
 				<th data-options="field:'lastTime',width:80">最后登录时间</th>
 				<th data-options="field:'lastIp',width:80">最后登录IP</th>
@@ -29,17 +29,8 @@
 		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="editUser()" plain="true">修改</a> 
 		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="deleteUser()" plain="true">删除</a>
 		<div>
-			Date From: <input class="easyui-datebox" style="width:80px">
-			To: <input class="easyui-datebox" style="width:80px">
-			Language: 
-			<select class="easyui-combobox" panelHeight="auto" style="width:100px">
-				<option value="java">Java</option>
-				<option value="c">C</option>
-				<option value="basic">Basic</option>
-				<option value="perl">Perl</option>
-				<option value="python">Python</option>
-			</select>
-		<a href="#" class="easyui-linkbutton" iconCls="icon-search">Search</a>
+			用户名: <input class="easyui-textbox" style="width:80px">		
+		<a href="#" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
 		</div>
 	</div>
 	
@@ -64,16 +55,17 @@
 	    		<tr>
 	    			<td>状态:</td>
 	    			<td>
-						<select name="status" >
+						<select name="status" style="width:70px;" class="easyui-combobox" >
 							<option selected="selected" value="0">正常</option>
 							<option value="1">禁用</option>
+							<option value="2">已过期</option>
 						</select>
 					</td>
 	    		</tr>
 	    		<tr>
 	    			<td>角色:</td>
 	    			<td>
-	    				<input id="roleid" name="roleid" class="easyui-combobox" style="width:180px;"></input>
+	    				<input id="roleid" name="roleId" class="easyui-combobox role" style="width:180px;"></input>
 					</td>
 	    		</tr>
 	    	</table>
@@ -93,16 +85,17 @@
 	    		<tr>
 	    			<td>状态:</td>
 	    			<td>
-						<select name="status">
-							<option value="1">正常</option>
-							<option value="2">禁用</option>
+						<select name="status" style="width:70px;" class="easyui-combobox" >
+							<option selected="selected" value="0">正常</option>
+							<option value="1">禁用</option>
+							<option value="2">已过期</option>
 						</select>
 					</td>
 	    		</tr>
 	    		<tr>
 	    			<td>角色:</td>
 	    			<td>
-	    				<input id="roleid2" name="roleid" class="easyui-combobox" style="width:180px;"></input>
+	    				<input id="roleid2" name="roleName" class="easyui-combobox role" style="width:180px;"></input>
 					</td>
 	    		</tr>
 	    	</table>
@@ -121,7 +114,7 @@
 	<script type="text/javascript">
 	$(function() {  
 		loadDataGrid();
-		//roleTree();
+		roleTree();
     });  	
 	function loadDataGrid(){
 		 $('#dg').datagrid({  
@@ -158,14 +151,17 @@
         if (value == "0") {
             return '<span style="color:green">正常</span>';
         }
-        else {
-            return '<span style="color:red">异常</span>';
+        else if (value == "1")  {
+            return '<span style="color:red">禁用</span>';
+        }
+        else if (value == "2")  {
+            return '<span style="color:gray">已过期</span>';
         }
     }
 
-	/*function roleTree(){
-		$('.easyui-combobox').combobox({
-			url:'roleController.do?dropdown',
+	function roleTree(){
+		$('.role').combobox({
+			url:'getRoles',
 			method:'get',
 			valueField:'id',
 			textField:'text',
@@ -174,7 +170,7 @@
 			panelHeight:'auto'
 			
 		});
-	}*/
+	}
 		
 		var url;
 		function newUser(){
@@ -209,7 +205,7 @@
 						}
 					}
 				});
-				url = 'userController.do?update';
+				url = 'updateUser';
 			}else{
 				$.messager.show({
 					title: '提示信息',
@@ -274,8 +270,9 @@
 				$.messager.confirm('提示信息','确定删除?',function(r){
 					if (r){
 						for ( var i = 0; i < rows.length; i++) {
-							ids.push(rows[i].id);
+							ids.push(rows[i].userId);
 						}
+						
 						$.ajax({
 							url : 'deleteUser',
 							type : 'post',

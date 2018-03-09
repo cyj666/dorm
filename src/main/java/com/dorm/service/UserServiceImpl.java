@@ -54,4 +54,34 @@ public class UserServiceImpl implements UserService {
 		userMapper.updateUser(user);
 	}
 
+	@Override
+	public User getUserDetails(String username) {
+		// TODO Auto-generated method stub
+		return userMapper.getUserDetails(username);
+	}
+
+	@Override
+	public void addUserRole(Integer userId, Integer roleId) {
+		// TODO Auto-generated method stub
+		userMapper.addUserRole(userId, roleId);
+	}
+
+	@Override
+	public void addRolePermision(Integer roleId, Integer permissionId) {
+		// TODO Auto-generated method stub
+		userMapper.addRolePermision(roleId, permissionId);
+	}
+
+	@Override
+	public void deleteUserRole(Integer userId, Integer roleId) {
+		// TODO Auto-generated method stub
+		userMapper.deleteUserRole(userId, roleId);
+	}
+
+	@Override
+	public void deleteRolePermision(Integer roleId, Integer permissionId) {
+		// TODO Auto-generated method stub
+		userMapper.deleteRolePermision(roleId, permissionId);
+	}
+
 }

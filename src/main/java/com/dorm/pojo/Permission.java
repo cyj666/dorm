@@ -39,25 +39,23 @@ public class Permission implements Serializable {
         } else if (!permissionId.equals(other.permissionId))  
             return false;  
         return true;  
-    }  
-  
-    // --------------------------------------------------------------------------------------  
-  
-    public Integer getId() {  
-        return permissionId;  
-    }  
-  
-    public void setId(Integer id) {  
-        this.permissionId = id;  
-    }  
-  
-    public String getName() {  
-        return permissionName;  
-    }  
-  
-    public void setName(String permissionName) {  
-        this.permissionName = permissionName;  
     }
+
+	public Integer getPermissionId() {
+		return permissionId;
+	}
+
+	public void setPermissionId(Integer permissionId) {
+		this.permissionId = permissionId;
+	}
+
+	public String getPermissionName() {
+		return permissionName;
+	}
+
+	public void setPermissionName(String permissionName) {
+		this.permissionName = permissionName;
+	}
 
 	public String getPermissionDesc() {
 		return permissionDesc;
@@ -67,4 +65,7 @@ public class Permission implements Serializable {
 		this.permissionDesc = permissionDesc;
 	}  
   
+    // --------------------------------------------------------------------------------------  
+  
+    
 }  

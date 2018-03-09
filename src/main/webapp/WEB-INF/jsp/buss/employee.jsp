@@ -91,16 +91,29 @@
 	</div>
 	<script type="text/javascript">
 	$(function() {  
-		/*$.ajaxSetup({
+		$.ajaxSetup({
 			error:function(xhr,status,error){
-				window.location.href="404"+"error="+error;
+				top.location.href="404"+"error="+error;
 			},
-			dataFilter:function(data,type){
-				loadDataGrid();
-					alert(type+data);
-					window.location.href="404";
+			dataFilter:function(data,type){			
+					if (data!=null&&data.length>0) {
+						//alert(data);
+						if(data.indexOf("total")!=-1){
+							return data;
+						}else{
+							$.messager.alert('错误！','您没有此权限!','error');
+							setInterval(function(){
+								window.location.href="401";
+							}, 2000);							
+							return "";
+						}
+						
+					}
+					
+					//top.location.href="500";
 			
-		})*/
+		}
+		})
 		loadDataGrid();
     });  	
 	function employeeSearch(){

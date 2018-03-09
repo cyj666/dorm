@@ -61,7 +61,7 @@ public class UserRealm extends JdbcRealm {
 		//SimpleAuthorizationInfo
 		//SimpleCookie
  		String username = (String) principals.getPrimaryPrincipal();
-		User user = userService.getUserByUsername(username);
+		User user = userService.getUserDetails(username);
 		Role role = new Role();
 		Permission permission = new Permission();
 		//角色名的集合 
@@ -73,7 +73,7 @@ public class UserRealm extends JdbcRealm {
 		Iterator<?> iterator = user.getRoleSet().iterator();
 		while(iterator.hasNext()) {
 			role = (Role) iterator.next();
-			roleSet.add(role.getName());
+			roleSet.add(role.getRoleName());
 			pSet = role.getPermissionSet();
 			//System.out.println(role.getPermissionSet());
 		}
@@ -81,7 +81,7 @@ public class UserRealm extends JdbcRealm {
 		iterator = pSet.iterator();
 		while (iterator.hasNext()) {
 			permission = (Permission) iterator.next();
-			piSet.add(permission.getName());
+			piSet.add(permission.getPermissionName());
 		}
 		
 		SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
@@ -108,10 +108,7 @@ public class UserRealm extends JdbcRealm {
 		}
 		if (user.getStatus().equals(2)) {
 			throw new ExpiredCredentialsException();
-		}
-		if (user.getStatus().equals(3)) {
-			throw new ExcessiveAttemptsException();
-		}
+		}		
 		
 
 		authenticationInfo = super.doGetAuthenticationInfo(token);

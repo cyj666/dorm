@@ -1,7 +1,9 @@
 package com.dorm.controller;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +31,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.dorm.pojo.Role;
 import com.dorm.pojo.User;
+import com.dorm.service.RoleService;
 import com.dorm.service.UserService;
 
 @Controller
@@ -38,6 +42,9 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	RoleService roleService;
 	
 	@RequestMapping(value="getAllUser",method=RequestMethod.GET,produces="application/json;charset=utf-8")
 	@ResponseBody
@@ -54,30 +61,11 @@ public class UserController {
 	public String getUser(@RequestParam(value="id",defaultValue="1")int id,
 			@RequestParam(value="username",defaultValue="admin")String username) {
 		User user = userService.getUserById(id);
-		
 		return user.toString();
 		
 	}
 
-	@RequestMapping(value="addUser",method=RequestMethod.GET,produces="application/json;charset=utf-8")
-	@ResponseBody
-	public String addUser(@RequestParam(value="username")String username,
-			@RequestParam(value="password")String password,
-			@RequestParam(value="status",defaultValue="0")Integer status) {
-		if (userService.getUserByUsername(username)!=null) {
-			String result = "{\"success\":false,\"msg\":\"新增用户失败，原因：账号重复\"}";
-			return result;		
-		}	
-		User user = new User();
-		user.setUsername(username);
-		user.setPassword(new SimpleHash("MD5", password).toString());
-		user.setLocked(false);
-		user.setCreateTime(new Date());
-		user.setStatus(status);
-		userService.addUser(user);
-		String result = "{\"success\":true,\"msg\":\"新增用户成功\"}";
-		return result;
-	}
+	
 		
 	@RequestMapping(value="login",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
@@ -137,17 +125,17 @@ public class UserController {
 	        model.addAttribute("message", msg);  
 	        System.out.println(msg);  
 	    } catch (UnauthorizedException e) {  
-	        msg = "您没有得到相应的授权！" + e.getMessage();  
+	        msg = "您没有得到相应的授权！";  
 	        model.addAttribute("message", msg);  
 	        System.out.println(msg);  
 	    } catch (AuthenticationException e) {
 			// TODO: handle exception
-	    	 msg = "验证错误" + e.getMessage();  
+	    	 msg = "验证错误";  
 		     model.addAttribute("message", msg);  
 		     System.out.println(msg);
 		} catch (Exception e) {
 			// TODO: handle exception
-	    	 msg = "未知错误" + e.getMessage();  
+	    	 msg = "未知错误";  
 		     model.addAttribute("message", msg);  
 		     System.out.println(msg);
 		} 			
@@ -157,43 +145,83 @@ public class UserController {
 		
 	}
 	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET,produces="text/html;charset=utf-8") 
+	@ResponseBody
+	public String logout(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {  		
+		String result = "false";
+		try {
+			response.setCharacterEncoding("UTF-8");
+			Subject subject = SecurityUtils.getSubject();
+			subject.logout();
+			result = "您已成功登出";
+		} catch (Exception e) {
+			// TODO: handle exception
+			result = "登出发生异常";
+		}
+	    return result;
+	}  
+	
 	
 	@RequestMapping(value="saveUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String saveUser(@RequestParam(value="username")String username,
 			@RequestParam(value="password")String password,
 			@RequestParam(value="password2")String password2,
-			@RequestParam(value="status")Integer status) {
+			@RequestParam(value="status")Integer status,
+			@RequestParam(value="roleId")Integer roleId) {
 		User user = new User();
 		String result;
 		if (!password.equals(password2)) {			
 			result = "{\"success\":false,\"msg\":\"两次密码不一致\"}";
 			return result;
 		}		
+		if (userService.getUserByUsername(username)!=null) {
+			result = "{\"success\":false,\"msg\":\"新增用户失败，原因：账号重复\"}";
+			return result;		
+		}
 		user.setUsername(username);
 		user.setPassword(new SimpleHash("MD5", password).toString());
 		user.setCreateTime(new Date());
 		user.setLocked(false);
 		user.setStatus(status);
-		userService.addUser(user);
+		userService.addUser(user);	
+		user = userService.getUserByUsername(username);
+		userService.addUserRole(user.getUserId(), roleId);
 		result = "{\"success\":true,\"msg\":\"添加成功\"}";
 		return result;
 	}
 	
 	@RequestMapping(value="deleteUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
-	public String deleteUser(@RequestParam(value="username")String username,
-			@RequestParam(value="password")String password,			
-			@RequestParam(value="status")Integer status) {
+	public String deleteUser(@RequestParam(value="ids")Integer[] ids) {
 		User user = new User();
-		String result;	
-		user.setUsername(username);
-		user.setPassword(password);
-		user.setCreateTime(new Date());
-		user.setLocked(false);
-		user.setStatus(status);
-		userService.deleteUser(user);
+		for (Integer i : ids) {
+			user.setUserId(i);
+			userService.deleteUser(user);
+		}		
+		String result;		
 		result = "{\"success\":true,\"msg\":\"删除成功\"}";
 		return result;
 	}
+	
+	@RequestMapping(value="updateUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String updateUser(
+			@RequestParam(value="userId")Integer userId,
+			@RequestParam(value="status")Integer status,
+			@RequestParam(value="roleId",required=false)Integer[] roleId) {
+		User user = new User();
+		user = userService.getUserById(userId);
+		user.setStatus(status);
+		userService.updateUser(user);
+		/*user = userService.getUserDetails(username);
+		Set<Role> roles = user.getRoleSet();
+		for (Role role : roles) {
+			role.getRoleId()
+		}*/
+		String result;		
+		result = "{\"success\":true,\"msg\":\"修改成功\"}";
+		return result;
+	}
+	
 }

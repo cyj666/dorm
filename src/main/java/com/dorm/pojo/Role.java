@@ -9,6 +9,7 @@ public class Role implements Serializable{
 	  
     private Integer roleId;  
     private String roleName;  
+    private String roleDesc; 
     private Set<Permission> permissionSet = new HashSet<Permission>();  
   
     public Role() {  
@@ -40,31 +41,41 @@ public class Role implements Serializable{
         } else if (!roleId.equals(other.roleId))  
             return false;  
         return true;  
-    }  
+    }
+
+	public Integer getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Integer roleId) {
+		this.roleId = roleId;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
+	public String getRoleDesc() {
+		return roleDesc;
+	}
+
+	public void setRoleDesc(String roleDesc) {
+		this.roleDesc = roleDesc;
+	}
+
+	public Set<Permission> getPermissionSet() {
+		return permissionSet;
+	}
+
+	public void setPermissionSet(Set<Permission> permissionSet) {
+		this.permissionSet = permissionSet;
+	}  
       
     // --------------------------------------------------------------------------------  
   
-    public Integer getId() {  
-        return roleId;  
-    }  
-  
-    public void setId(Integer id) {  
-        this.roleId = id;  
-    }  
-  
-    public String getName() {  
-        return roleName;  
-    }  
-  
-    public void setName(String roleName) {  
-        this.roleName = roleName;  
-    }  
-  
-    public Set<Permission> getPermissionSet() {  
-        return permissionSet;  
-    }  
-  
-    public void setPermissionSet(Set<Permission> permissionSet) {  
-        this.permissionSet = permissionSet;  
-    }  
+   
 }

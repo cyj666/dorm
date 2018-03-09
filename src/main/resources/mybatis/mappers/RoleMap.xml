@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.mapper.RoleMapper">
+ 	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
+ 	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+    
+
+	<select id="getRole" resultType="Role" parameterType="role">
+		select * from roles
+		<where>
+		<if test="roleId != null and roleId !='' ">
+       	and room_id = #{roleId}
+        </if>
+        <if test="roleName != null and roleName !='' ">
+       	and role_name = #{roleName}
+        </if>
+        <if test="roleDesc != null and roleDesc !='' ">
+       	and role_desc = #{roleDesc}
+        </if>       
+		</where>
+	</select>
+	
+		
+	
+	<select id="getAllRole" resultType="Role">
+		select * from roles
+	</select>
+	
+
+	
+	<insert id="addRole" useGeneratedKeys="true" keyProperty="role_id" parameterType="role">
+		insert into
+		roles(role_name,role_desc)
+		values(#{roleName},#{roleDesc})
+	</insert>
+	
+
+
+	<delete id="deleteRole" parameterType="role">
+        delete  from roles
+		<where>
+        <if test="roleId != null and roleId !='' ">
+       	and role_id = #{roleId}
+        </if> 
+        <if test="roleName != null and roleName !='' ">
+       	and role_name = #{roleName}
+        </if>
+        </where>
+    </delete>
+    
+         
+    <update id="updateRole" parameterType="role">
+    update roles
+    <set>
+        <if test="roleName != null and roleName !='' ">
+       	 role_name = #{roleName},
+        </if>
+        <if test="roleDesc != null and roleDesc !='' ">
+       	role_desc = #{roleDesc},
+        </if>       
+    </set>
+    <where>
+    	role_id = #{roleId}
+    </where>  
+    </update>
+        
+
+</mapper>

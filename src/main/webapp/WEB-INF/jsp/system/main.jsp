@@ -31,7 +31,7 @@
 				<div style="right: 0px; bottom: 0px;"><a href="javascript:void(0);" class="easyui-menubutton" menu="#layout_north_zxMenu" iconCls="icon-exit" style="color: #FFFFFF">${msg }注销</a></div>
 				<div id="layout_north_zxMenu" style="width: 100px; display: none;">
 					<div class="menu-sep"></div>
-					<div onclick="exit('loginController.do?logout','确定退出该系统吗 ?');">退出系统</div>
+					<div onclick="exit('logout','确定退出该系统吗 ?');">退出系统</div>
 				</div>	
 				</div>
 				</div>
@@ -176,6 +176,24 @@
 			return s;
 		}
 		
+		function exit(url,msg){
+			$.messager.confirm('提示信息',msg,function(r){
+				if (r){
+					$.ajax({
+						url : url,
+						type : 'get',						
+						cache : false,
+						success : function(result) {							
+							$.messager.alert('提示信息',result,'info');	
+							setInterval(function(){
+								window.location.href="/login";
+							}, 2000);
+							}
+						
+					});
+				}
+			})
+		}
 		
 	</script>
 </html>
