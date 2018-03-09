@@ -19,15 +19,17 @@
 				<th data-options="field:'lastTime',width:80">最后登录时间</th>
 				<th data-options="field:'lastIp',width:80">最后登录IP</th>
 				<th data-options="field:'status',width:80"  formatter="changeValue">状态</th>
-				<th data-options="field:'locked',width:80">是否被锁</th>
+				<th data-options="field:'locked',width:40">是否被锁</th>
+				<th data-options="field:'roleSet',width:80"  formatter="managerRole">拥有角色</th>
 			</tr>
 		</thead>
 	</table>
 	
 	<div id="toolbar">
-		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="newUser()" plain="true">新增</a> 
-		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="editUser()" plain="true">修改</a> 
-		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="deleteUser()" plain="true">删除</a>
+		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="newUser()" plain="true">新增用户</a> 
+		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="editUser()" plain="true">修改用户</a> 
+		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="deleteUser()" plain="true">删除用户</a>
+		<a href="#" class="easyui-linkbutton reset" iconCls="icon-undo" onclick="resetPwd()" plain="true">重置密码</a>
 		<div>
 			用户名: <input class="easyui-textbox" style="width:80px">		
 		<a href="#" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
@@ -95,7 +97,7 @@
 	    		<tr>
 	    			<td>角色:</td>
 	    			<td>
-	    				<input id="roleid2" name="roleName" class="easyui-combobox role" style="width:180px;"></input>
+	    				<input id="roleid2" name="roleId" class="easyui-combobox role" style="width:180px;" required=true missingMessage="必须选个角色"></input>
 					</td>
 	    		</tr>
 	    	</table>
@@ -113,6 +115,26 @@
 	
 	<script type="text/javascript">
 	$(function() {  
+		$.ajaxSetup({
+			error:function(xhr,status,error){
+				top.location.href="404"+"error="+error;
+			},
+			dataFilter:function(data,type){			
+					if (data!=null&&data.length>0) {
+						//alert(data);
+						if(data.indexOf("total")!=-1||!(data.indexOf("meta")!=-1)){							
+							return data;
+						}else if(data.indexOf("href")!=-1){
+							$.messager.alert('错误！','您没有此权限!','error');
+							setInterval(function(){
+								window.location.href="401";
+							}, 2000);						
+							return "";
+						}
+						
+					}		
+		}
+		})
 		loadDataGrid();
 		roleTree();
     });  	
@@ -185,26 +207,7 @@
 				roleTree();
 				$('#dlgupdate').dialog('open').dialog('setTitle','编辑');
 				$('#fmupdate').form('clear');
-				$('#fmupdate').form('load',row[0]);
-				$.ajax({
-					url : 'userController.do?queryRole',
-					type : 'get',
-					async:false,
-					data : {
-						id : row[0].id
-					},
-					cache : false,
-					success : function(result) {
-						if (result.success){
-							$('.easyui-combobox').combobox("setValues",result.obj);
-						} else {
-							$.messager.show({	
-								title: '提示信息',
-								msg: result.msg
-							});
-						}
-					}
-				});
+				$('#fmupdate').form('load',row[0]);												
 				url = 'updateUser';
 			}else{
 				$.messager.show({
@@ -305,6 +308,41 @@
 			}
 		}
 	
+		function resetPwd(){
+			var row = $('#dg').datagrid('getSelections');
+			if (row.length == 1){
+				$.messager.confirm('提示信息','确定重置?',function(r){
+					if (r){
+						$.ajax({
+							url : 'resetPwd',
+							type : 'post',	
+							data:"userId="+row[0].userId,
+							cache : false,
+							success : function(result) {
+								$.messager.alert('Info', "重置密码成功！初始密码为"+result, 'info');
+							}
+						});
+					}
+				})
+			}else{
+				$.messager.show({
+					title: '提示信息',
+					msg: '请选择一行数据再进行编辑！'
+				});
+			}
+		}
+		
+	function managerRole(value,row,index){
+			if(value!=null){	
+				var arr ="" ;
+				
+				for (var i = 0; i < value.length; i++) {
+					arr = value[i].roleName+","+arr;	
+					
+				}
+				return arr;
+			}
+	}
 	</script>
 	
 </body>

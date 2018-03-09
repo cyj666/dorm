@@ -11,16 +11,16 @@
 	<table id="dg" class="" title="列表" style="width: 700px; height: 300px">
 		<thead>
 			<tr>
-				<th data-options="field:'name',width:80">角色名称</th>
-				<th data-options="field:'description',width:80">角色描述</th>
+				<th data-options="field:'username',width:80">用户</th>
+				<th data-options="field:'roleName',width:80">角色</th>				
 			</tr>
 		</thead>
 	</table>
 	
 	<div id="toolbar">
-		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="create()" plain="true">新增</a> 
-		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="edit()" plain="true">修改</a> 
-		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="del()" plain="true">删除</a>
+		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="create()" plain="true">新增角色</a> 
+		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="edit()" plain="true">修改角色</a> 
+		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="del()" plain="true">删除角色</a>
 	</div>
 	
 	<div id="dlg" class="easyui-dialog" data-options="modal:true" title="数据参数" style="width: 400px; height: 280px;" closed="true" buttons="#dlg-buttons">

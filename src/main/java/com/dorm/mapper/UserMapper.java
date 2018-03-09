@@ -12,6 +12,7 @@ public interface UserMapper {
 	public User getUsers(User user);
 	public List<User> getAllUser();
 	public User getUserDetails(@Param("username")String username);
+	public List<User> getAllUserDetails();
 	
 	public void addUser(User user);
 	public void deleteUser(User user);

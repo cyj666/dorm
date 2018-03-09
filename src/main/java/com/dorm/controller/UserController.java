@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -19,15 +21,21 @@ import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -46,16 +54,19 @@ public class UserController {
 	@Autowired
 	RoleService roleService;
 	
+	@RequiresPermissions(value= {"get:user"})
 	@RequestMapping(value="getAllUser",method=RequestMethod.GET,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getAllUser() {
 		//User user = userService.getUserById(1);
-		List<User> list = userService.getAllUser();		
+		List<User> list = userService.getAllUser();	
+		list = userService.getAllUserDetails();
 		String json = JSON.toJSONString(list,SerializerFeature.WriteDateUseDateFormat);		
 		String JSON = "{\"total\":"+list.size()+",\"rows\":"+json+"}";
 		return JSON;
 	}
 	
+	@RequiresPermissions(value= {"get:user"})
 	@RequestMapping("/getUser")
 	@ResponseBody
 	public String getUser(@RequestParam(value="id",defaultValue="1")int id,
@@ -66,7 +77,7 @@ public class UserController {
 	}
 
 	
-		
+	
 	@RequestMapping(value="login",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String login(@RequestParam(value="username")String username,
@@ -145,6 +156,7 @@ public class UserController {
 		
 	}
 	
+	@RequiresUser
 	@RequestMapping(value = "/logout", method = RequestMethod.GET,produces="text/html;charset=utf-8") 
 	@ResponseBody
 	public String logout(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {  		
@@ -198,6 +210,7 @@ public class UserController {
 		for (Integer i : ids) {
 			user.setUserId(i);
 			userService.deleteUser(user);
+			userService.deleteUserRole(i, null);
 		}		
 		String result;		
 		result = "{\"success\":true,\"msg\":\"删除成功\"}";
@@ -214,14 +227,44 @@ public class UserController {
 		user = userService.getUserById(userId);
 		user.setStatus(status);
 		userService.updateUser(user);
-		/*user = userService.getUserDetails(username);
+		user = userService.getUserDetails(user.getUsername());
 		Set<Role> roles = user.getRoleSet();
-		for (Role role : roles) {
-			role.getRoleId()
-		}*/
+		//先从用户角色中间表中删除所有对应关系，在依次添加
+		for (Role role : roles) {			
+			userService.deleteUserRole(userId, role.getRoleId());
+		}
+		for (Integer i : roleId) {
+			userService.addUserRole(userId, i);
+		}
 		String result;		
 		result = "{\"success\":true,\"msg\":\"修改成功\"}";
 		return result;
 	}
 	
+	@RequestMapping(value = "/resetPwd", method = RequestMethod.POST,produces="text/html;charset=utf-8") 
+	@ResponseBody
+	public String resetPwd(@RequestParam(value="userId")Integer userId) {
+		User user = userService.getUserById(userId);
+		user.setPassword(new SimpleHash("MD5", "000001").toString());  //自定义初始密码为000001
+		userService.updateUser(user);
+		return "000001";
+	}
+	
+	@ExceptionHandler({Exception.class})
+	 @ResponseStatus(code=HttpStatus.UNAUTHORIZED)
+	 public String processUnauthenticatedException(ServletRequest request,ServletResponse response) {
+	   // log.info("==========进入了异常处理方法，使用@ExceptionHandler处理异常");
+	    /*ModelAndView mv = new ModelAndView();
+	    mv.addObject("ex", ex);	    
+	    // 为了区分，跳转掉另一个视图
+	    mv.setViewName("error/404");*/
+		String result = "{\"success\":false,\"msg\":\"请先登录！\"}";
+		try {
+			WebUtils.issueRedirect(request, response, "login?kickout=1");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "index";	    
+	    }
 }

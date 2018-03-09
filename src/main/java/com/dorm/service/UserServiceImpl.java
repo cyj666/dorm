@@ -84,4 +84,10 @@ public class UserServiceImpl implements UserService {
 		userMapper.deleteRolePermision(roleId, permissionId);
 	}
 
+	@Override
+	public List<User> getAllUserDetails() {
+		// TODO Auto-generated method stub
+		return userMapper.getAllUserDetails();
+	}
+
 }

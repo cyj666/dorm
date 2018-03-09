@@ -43,7 +43,8 @@ public class EmployeeController {
 	EmployeeService employeeService;
 	
 	@RequiresUser
-	@RequiresRoles(value={"admin"})
+	//@RequiresRoles(value={"admin"})
+	@RequiresPermissions(value= {"get:employee"})
 	@RequestMapping(value="getAllEmployee",method=RequestMethod.GET,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getAllEmployee(@RequestParam(value="page",defaultValue="1")int pageNum,
@@ -77,7 +78,8 @@ public class EmployeeController {
 	
 	 
 	@RequiresUser
-	@RequiresRoles(value={"admin"})
+	//@RequiresRoles(value={"admin"})
+	@RequiresPermissions(value= {"get:employee"})
 	@RequestMapping(value="/getEmployee",produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getEmployee(@RequestParam(value="employeeName",required=false)String employeeName,
@@ -104,7 +106,8 @@ public class EmployeeController {
 	
 	
 	@RequiresUser
-	@RequiresRoles(value={"admin"})
+	//@RequiresRoles(value={"admin"})
+	@RequiresPermissions(value= {"delete:employee"})
 	@RequestMapping(value="/deleteEmployee",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String deleteEmployee(@RequestParam(value="ids")int[] ids) {
@@ -122,7 +125,8 @@ public class EmployeeController {
 	
 	
 	@RequiresUser
-	@RequiresRoles(value={"admin"})
+	//@RequiresRoles(value={"admin"})
+	@RequiresPermissions(value= {"add:employee"})
 	@RequestMapping(value="addEmployee",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String addEmployee(@RequestParam(value="employeeName")String employeeName,
@@ -148,7 +152,8 @@ public class EmployeeController {
 	
 	
 	@RequiresUser
-	@RequiresRoles(value={"admin"})
+	//@RequiresRoles(value={"admin"})
+	@RequiresPermissions(value= {"update:employee"})
 	@RequestMapping(value="updateEmployee",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String updateEmployee(@RequestParam(value="employeeName")String employeeName,

@@ -12,6 +12,7 @@
     <result property="password" column="password"/>  
     <result property="locked" column="locked"/>  
     <result property="status" column="status"/> 
+    <result property="createTime" column="create_time"/> 
     <result property="lastTime" column="last_time"/> 
     <result property="lastIp" column="last_ip"/> 
     <!-- 进行 多表关联插叙，先关联user和role -->  
@@ -36,7 +37,20 @@
 	LEFT JOIN roles r ON r.role_id = ur.role_id
 	LEFT JOIN roles_permissions rp ON rp.role_id = r.role_id
 	LEFT JOIN permissions p ON p.permission_id = rp.permission_id
-	WHERE u.username = #{username}
+	<where>
+	<if test="username != null and username !='' ">
+		u.username = #{username}
+	</if>
+	</where>
+	</select>
+	
+	<select id="getAllUserDetails" resultMap="userMap">
+	SELECT *
+	FROM users u 
+	LEFT JOIN users_roles ur ON u.user_id = ur.user_id 
+	LEFT JOIN roles r ON r.role_id = ur.role_id
+	LEFT JOIN roles_permissions rp ON rp.role_id = r.role_id
+	LEFT JOIN permissions p ON p.permission_id = rp.permission_id	
 	</select>
 
 	<select id="getUser" resultType="User" parameterType="user">
