@@ -132,6 +132,11 @@ class="com.dorm.filter.KickoutSessionControlFilter">
     <property name="maxSession" value="1"/>  
     <property name="kickoutUrl" value="login?kickout=1"/>  
 </bean> 
+
+<bean id="forceLogoutFilter"   
+class="com.dorm.filter.ForceLogoutFilter">  
+    
+</bean> 
  <!--   
        Shiro主过滤器本身功能十分强大，其强大之处就在于它支持任何基于URL路径表达式的、自定义的过滤器的执行  
        Web应用中，Shiro可控制的Web请求必须经过Shiro主过滤器的拦截，Shiro对基于Spring的Web应用提供了完美的支持   
@@ -148,6 +153,7 @@ class="com.dorm.filter.KickoutSessionControlFilter">
 		  <property name="filters">
             <map>
                 <entry key="kickout" value-ref="kickoutSessionControlFilter"/>
+                <entry key="force" value-ref="forceLogoutFilter"></entry>
             </map>
         </property>
         <property name="filterChainDefinitions">  
@@ -156,7 +162,7 @@ class="com.dorm.filter.KickoutSessionControlFilter">
                 /captchaCode=anon   
                 /main=user
                 /room=user            
-                /**=kickout
+                /**=kickout,force
             </value>  
         </property>  
     </bean>  

@@ -1,12 +1,15 @@
 package com.dorm.controller;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -24,6 +27,9 @@ import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SessionKey;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +37,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -53,6 +61,9 @@ public class UserController {
 	
 	@Autowired
 	RoleService roleService;
+	
+	@Autowired  
+	private SessionDAO sessionDAO; 
 	
 	@RequiresPermissions(value= {"get:user"})
 	@RequestMapping(value="getAllUser",method=RequestMethod.GET,produces="application/json;charset=utf-8")
@@ -84,7 +95,7 @@ public class UserController {
 			@RequestParam(value="password")String password,
 			@RequestParam(value="captcha")String captcha,
 			HttpServletRequest request,HttpServletResponse response,Model model) {
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession();		 
 		String randomString = captcha.toUpperCase();
 		String msg = null;
 		User user =  new User();
@@ -267,4 +278,36 @@ public class UserController {
 		}
 		return "index";	    
 	    }
+	
+	@RequestMapping("/forceLogout/{sessionId}")  
+    public void forceLogout(@PathVariable("sessionId") String sessionId,   
+        RedirectAttributes redirectAttributes) {  
+        try {  
+            Session session = sessionDAO.readSession(sessionId);  
+            if(session != null) {  
+                session.setAttribute(  
+                    "LOGOUT", Boolean.TRUE);  
+            }  
+        } catch (Exception e) {/*ignore*/}  
+       // redirectAttributes.addAttribute("forcelogout", "1");  //重定向携带的参数
+       // return "redirect:/login";  
+    }  
+	
+	@RequestMapping(value="getSessionId",method=RequestMethod.GET,produces="text/html;charset=utf-8")
+	@ResponseBody
+	public Serializable getSessionId(HttpServletRequest request,HttpServletResponse response) {
+		Cookie[] cookies = request.getCookies();
+		String sid = null;
+		for (Cookie cookie : cookies) {
+			System.out.println(cookie.getName()+":"+cookie.getValue());
+			if (cookie.getName().equals("sid")) {
+				sid = cookie.getValue();
+				cookie.setMaxAge(-1);
+			}
+		}
+		Session session = sessionDAO.readSession(sid);
+		//session.setAttribute("LOGOUT", Boolean.TRUE);
+		return sid+":"+sessionDAO.toString()+":"+session.toString();
+	}
+	
 }
