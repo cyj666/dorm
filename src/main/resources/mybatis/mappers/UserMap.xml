@@ -154,9 +154,21 @@
 		 delete  from roles_permissions 
 		<where>        
 			role_id = #{roleId} 
-			and permission_id = #{permissionId}
+			<if test="permissionId != null">
+    		and permission_id = #{permissionId}
+    		</if>			
         </where>
 	</delete>
+	
+	 <update id="updateRolePermision" parameterType="int">
+    update roles_permissions 
+    <set>   	   	
+    	permission_id = #{permissionId}
+    </set>
+    <where>
+    	role_id =#{roleId}
+    </where>  
+    </update>
 	
 	
     

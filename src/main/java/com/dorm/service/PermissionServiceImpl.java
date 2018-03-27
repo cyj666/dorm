@@ -17,31 +17,31 @@ public class PermissionServiceImpl implements PermissionService {
 	@Override
 	public Permission getpermission(Permission permission) {
 		// TODO Auto-generated method stub
-		return permissionMapper.getpermission(permission);
+		return permissionMapper.getPermission(permission);
 	}
 
 	@Override
 	public List<Permission> getAllpermission() {
 		// TODO Auto-generated method stub
-		return permissionMapper.getAllpermission();
+		return permissionMapper.getAllPermission();
 	}
 
 	@Override
 	public void addpermission(Permission permission) {
 		// TODO Auto-generated method stub
-		permissionMapper.addpermission(permission);
+		permissionMapper.addPermission(permission);
 	}
 
 	@Override
 	public void deletepermission(Permission permission) {
 		// TODO Auto-generated method stub
-		permissionMapper.deletepermission(permission);
+		permissionMapper.deletePermission(permission);
 	}
 
 	@Override
 	public void updatepermission(Permission permission) {
 		// TODO Auto-generated method stub
-		permissionMapper.updatepermission(permission);
+		permissionMapper.updatePermission(permission);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class PermissionServiceImpl implements PermissionService {
 		// TODO Auto-generated method stub
 		Permission permission = new Permission();
 		permission.setPermissionName(permissionName);
-		return permissionMapper.getpermission(permission);
+		return permissionMapper.getPermission(permission);
 	}
 
 }

@@ -22,4 +22,6 @@ public interface UserService {
 	public void deleteUserRole(Integer userId,Integer roleId);
 	public void deleteRolePermision(Integer roleId,Integer permissionId);
 	
+	public void updateRolePermision(Integer roleId,Integer permissionId);
+	
 }

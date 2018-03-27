@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.async.WebAsyncTask;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
@@ -145,10 +148,46 @@ public class BaseController {
 	}
 			
 	
-	@RequestMapping("401")
+	@RequestMapping("401") 
 	public String getUrl9() {
 		return "error/401";
 	}
+	
+	@RequestMapping(value="18",produces="text/html;charset=utf-8")
+	@ResponseBody
+	public Callable<String> getUrl18(@CookieValue(value="JSESSIONID")String id) {
+		System.out.println(id);		
+		return new Callable<String>() {
+
+			@Override
+			public String call() throws Exception {
+				// TODO Auto-generated method stub
+				Thread.sleep(2000);
+				return "OK";
+			}
+		};
+	}
+	
+	/**
+	 * 自定义超时时间
+	 * @return
+	 */
+	@RequestMapping(value="19",produces="text/html;charset=utf-8")
+	@ResponseBody
+	public WebAsyncTask<String> getUrl19() {
+		Callable<String> callable = new Callable<String>() {
+
+			@Override
+			public String call() throws Exception {
+				// TODO Auto-generated method stub
+				Thread.sleep(4000);
+				return "试试callable";
+			}
+		};
+		return new WebAsyncTask<>(5000, callable);
+	}
+	
+	
 	
 	@RequestMapping("403")
 	public String getUrl10() {

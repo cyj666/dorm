@@ -27,4 +27,7 @@ public interface UserMapper {
 			@Param("roleId")Integer roleId);
 	public void deleteRolePermision(@Param("roleId")Integer roleId,
 			@Param("permissionId")Integer permissionId);
+	
+	public void updateRolePermision(@Param("roleId")Integer roleId,
+			@Param("permissionId")Integer permissionId);
 }

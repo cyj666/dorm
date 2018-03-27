@@ -6,6 +6,17 @@
  	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
  	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
 
+<resultMap id="roleMap" type="com.dorm.pojo.Role">  
+    <id property="roleId" column="role_id"/>  
+    <result property="roleName" column="role_name"/>  
+    <result property="roleDesc" column="role_desc"/> 
+    <!-- 进行 多表关联插叙，关联role和permission -->     
+    <collection property="permissionSet" column="permission_id" ofType="com.dorm.pojo.Permission">  
+    <id property="permissionId" column="permission_id"/>  
+    <result property="permissionName" column="permission_name"/>  
+    <result property="permissionDesc" column="permission_desc"/>   
+    </collection>        
+    </resultMap> 
     
 
 	<select id="getRole" resultType="Role" parameterType="role">
@@ -26,8 +37,15 @@
 		
 	
 	<select id="getAllRole" resultType="Role">
-		select * from roles
+		select * from roles 
 	</select>
+	
+	
+	<select id="getAllRoleDetails" resultMap="roleMap">
+		select * from roles r RIGHT JOIN roles_permissions rp on r.role_id = rp.role_id 
+		LEFT JOIN permissions p ON rp.permission_id = p.permission_id 
+	</select>
+
 	
 
 	

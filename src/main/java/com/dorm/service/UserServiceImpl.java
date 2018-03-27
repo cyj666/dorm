@@ -90,4 +90,10 @@ public class UserServiceImpl implements UserService {
 		return userMapper.getAllUserDetails();
 	}
 
+	@Override
+	public void updateRolePermision(Integer roleId, Integer permissionId) {
+		// TODO Auto-generated method stub
+		userMapper.updateRolePermision(roleId, permissionId);
+	}
+
 }

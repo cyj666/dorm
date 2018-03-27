@@ -8,6 +8,7 @@ public interface RoleMapper {
 	
 	public Role getRole(Role role);
 	public List<Role> getAllRole();
+	public List<Role> getAllRoleDetails();
 	
 	public void addRole(Role role);
 	public void deleteRole(Role role);

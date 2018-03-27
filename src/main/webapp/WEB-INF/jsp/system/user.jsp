@@ -97,7 +97,7 @@
 	    		<tr>
 	    			<td>角色:</td>
 	    			<td>
-	    				<input id="roleid2" name="roleId" class="easyui-combobox role" style="width:180px;" required=true missingMessage="必须选个角色"></input>
+	    				<input id="roleid2" name="roleId" class="easyui-combobox role" style="width:180px;" required='true' missingMessage="必须选个角色"></input>
 					</td>
 	    		</tr>
 	    	</table>
@@ -245,7 +245,7 @@
 			$('#fm').form('submit',{
 				url: url,
 				onSubmit: function(){
-					alert(url);					
+					//alert(url);					
 					return $(this).form('validate');
 				},
 				success: function(result){

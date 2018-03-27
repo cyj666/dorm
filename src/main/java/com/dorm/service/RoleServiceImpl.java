@@ -52,4 +52,10 @@ public class RoleServiceImpl implements RoleService{
 		roleMapper.updateRole(role);
 	}
 
+	@Override
+	public List<Role> getAllRoleDetails() {
+		// TODO Auto-generated method stub
+		return roleMapper.getAllRoleDetails();
+	}
+
 }

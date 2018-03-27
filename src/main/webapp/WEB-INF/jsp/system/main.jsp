@@ -71,10 +71,10 @@
 							<li data-options="attributes:{'href':'buss?url=details'}">
 								<span>住宿管理</span>
 							</li>
-							<li>
+							<li data-options="attributes:{'href':'buss?url=details'}">
 								<span>水电管理</span>
 							</li>
-							<li>
+							<li data-options="attributes:{'href':'buss?url=details'}">
 								<span>网络管理</span>
 							</li>
 						</ul>
@@ -83,8 +83,8 @@
 						<span>系统管理</span>
 						<ul>
 							<li data-options="attributes:{'href':'BaseController.do?url=user'}">用户管理</li>
-							<li >角色管理</li>
-							<li>权限管理</li>							
+							<li data-options="attributes:{'href':'BaseController.do?url=role'}">角色管理</li>
+							<li data-options="attributes:{'href':'BaseController.do?url=permission'}">权限管理</li>							
 						</ul>
 					</li>
 					<li>

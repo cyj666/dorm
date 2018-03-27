@@ -5,10 +5,10 @@ import java.util.List;
 import com.dorm.pojo.Permission;
 
 public interface PermissionMapper {
-	public Permission getpermission(Permission permission);
-	public List<Permission> getAllpermission();
+	public Permission getPermission(Permission permission);
+	public List<Permission> getAllPermission();
 	
-	public void addpermission(Permission permission);
-	public void deletepermission(Permission permission);
-	public void updatepermission(Permission permission);
+	public void addPermission(Permission permission);
+	public void deletePermission(Permission permission);
+	public void updatePermission(Permission permission);
 }

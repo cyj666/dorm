@@ -12,19 +12,17 @@
 		<thead>
 			<tr>
 				<th data-options="field:'ck',checkbox:true"></th>
-				<th data-options="field:'roleId',width:20">系统ID</th>
-				<th data-options="field:'roleName',width:50">角色</th>
-				<th data-options="field:'roleDesc',width:50">角色描述</th>	
-				<th data-options="field:'permissionSet',width:50"  formatter="managerPermission">权限</th>			
+				<th data-options="field:'permissionId',width:20">系统ID</th>
+				<th data-options="field:'permissionName',width:50">权限名称</th>
+				<th data-options="field:'permissionDesc',width:50">权限描述</th>								
 			</tr>
 			
 		</thead>
 	</table>
 	
 	<div id="toolbar">
-		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="create()" plain="true">新增角色</a> 
-		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="edit()" plain="true">修改角色</a> 
-		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="del()" plain="true">删除角色</a>
+		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="create()" plain="true">新增权限</a> 
+		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="del()" plain="true">删除权限</a>
 	</div>
 	
 	<div id="dlg" class="easyui-dialog" data-options="modal:true" title="数据参数" style="width: 400px; height: 280px;" closed="true" buttons="#dlg-buttons">
@@ -44,7 +42,7 @@
 	    		<tr>
 	    			<td>权限:</td>
 	    			<td>
-	    				<select id="resourceid" class="easyui-combotree permission"  name="permissionId" multiple style="width:180px;"></select>
+	    				<select id="resourceid" class="easyui-combotree permission" multiple style="width:180px;"></select>
 					</td>
 	    		</tr>
 	    	</table>
@@ -71,7 +69,7 @@
 	            striped : true,  
 	            collapsible : true,  
 	            toolbar:"#toolbar",  
-	            url:'getRolesDetails',  
+	            url:'getPermissions',  
 	            loadMsg : '数据装载中......',  
 	            singleSelect:true,  
 	            fitColumns:true,  
@@ -97,14 +95,14 @@
 		function create(){
 			$('#dlg').dialog('open').dialog('setTitle','新建');
 			$('#fm').form('clear');
-			url = 'addRole';
+			url = 'roleController.do?save';
 		}
 		function edit(){
 			var row = $('#dg').datagrid('getSelections');
 			if (row.length == 1){
+				permissionTree();
 				$('#dlg').dialog('open').dialog('setTitle','编辑');
 				$('#fm').form('clear');
-				permissionTree();
 				$('#fm').form('load',row[0]);
 				url = 'updateRole';
 				
@@ -135,16 +133,15 @@
 			}
 		}
 		function save(){
-			/*var nodes = $('#resourceid').combotree('getValues');
+			var nodes = $('#resourceid').combotree('getValues');
 			var treeN = $('#resourceid').combotree('tree');
 			var others = treeN.tree('getChecked', 'indeterminate');
 			if(others != null && others.length>0){
 				for(var i=0; i<others.length; i++){
 					nodes.push(others[i].id);
 				}
-			}*/
-			//url = url + '&resourceids='+nodes;
-			//alert(url);
+			}
+			url = url + '&resourceids='+nodes;
 			$('#fm').form('submit',{
 				url: url,
 				onSubmit: function(){
@@ -172,13 +169,13 @@
 			var rows = $('#dg').datagrid('getSelections');
 			var ids = [];
 			if (rows.length > 0){
-				$.messager.confirm('提示信息','确定删除?',function(r){
+				$.messager.confirm('提示信息','确定删除?注：相关角色的权限也会发生改变',function(r){
 					if (r){
 						for ( var i = 0; i < rows.length; i++) {
-							ids.push(rows[i].roleId	);
+							ids.push(rows[i].id);
 						}
 						$.ajax({
-							url : 'deleteRole',
+							url : 'roleController.do?delete',
 							type : 'post',
 							data : {
 								ids : ids.join(',')
@@ -222,7 +219,7 @@
 	}
 		function permissionTree(){
 			$('.permission').combobox({
-				url:'getPermissions',
+				url:'getSimplePermissions',
 				method:'get',
 				valueField:'id',
 				textField:'text',
