@@ -2,8 +2,14 @@ package com.dorm.controller;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.DisabledAccountException;
@@ -30,6 +38,8 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.SessionKey;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +62,12 @@ import com.dorm.pojo.User;
 import com.dorm.service.RoleService;
 import com.dorm.service.UserService;
 
+import cn.hutool.core.date.DateUtil;
+
 @Controller
 public class UserController {
 	
+	public  static final Logger log = Logger.getLogger(UserController.class);
 	
 	@Autowired
 	UserService userService;
@@ -78,12 +91,13 @@ public class UserController {
 	}
 	
 	@RequiresPermissions(value= {"get:user"})
-	@RequestMapping("/getUser")
+	@RequestMapping(value="/getUser")
 	@ResponseBody
-	public String getUser(@RequestParam(value="id",defaultValue="1")int id,
-			@RequestParam(value="username",defaultValue="admin")String username) {
-		User user = userService.getUserById(id);
-		return user.toString();
+	public String getUser(@RequestParam(value="username",defaultValue="admin")String username) {
+		User user = userService.getUserDetails(username);
+		String json = JSON.toJSONString(user,SerializerFeature.WriteDateUseDateFormat);
+		String JSON = "{\"total\":1"+",\"rows\":"+json+"}";
+		return JSON;
 		
 	}
 
@@ -121,6 +135,8 @@ public class UserController {
 	        model.addAttribute("message", msg);	
 	        //model.addAttribute("user", user);	
 	        String result = "{\"success\":true,\"msg\":\""+msg+"。\"}";
+	        log.fatal("用户"+username+"登录成功，时间："+DateUtil.formatDateTime(new Date())
+	         );
 			return result;  
 		} catch (IncorrectCredentialsException e) {  
 	        msg ="帐号"+ token.getPrincipal()+"登录密码错误。";  
@@ -152,7 +168,7 @@ public class UserController {
 	        System.out.println(msg);  
 	    } catch (AuthenticationException e) {
 			// TODO: handle exception
-	    	 msg = "验证错误";  
+	    	 msg = "无此账号，验证错误";  
 		     model.addAttribute("message", msg);  
 		     System.out.println(msg);
 		} catch (Exception e) {
@@ -172,26 +188,30 @@ public class UserController {
 	@ResponseBody
 	public String logout(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException {  		
 		String result = "false";
+		String username = "";
 		try {
 			response.setCharacterEncoding("UTF-8");
 			Subject subject = SecurityUtils.getSubject();
+			username = (String) subject.getPrincipal();
 			subject.logout();
 			result = "您已成功登出";
 		} catch (Exception e) {
 			// TODO: handle exception
 			result = "登出发生异常";
 		}
+		log.fatal("用户"+username+"退出系统，时间："+DateUtil.formatDateTime(new Date()));
 	    return result;
 	}  
 	
 	
+	@RequiresPermissions(value="add:user")
 	@RequestMapping(value="saveUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String saveUser(@RequestParam(value="username")String username,
 			@RequestParam(value="password")String password,
 			@RequestParam(value="password2")String password2,
 			@RequestParam(value="status")Integer status,
-			@RequestParam(value="roleId")Integer roleId) {
+			@RequestParam(value="roleId")Integer[] roleIds) {
 		User user = new User();
 		String result;
 		if (!password.equals(password2)) {			
@@ -209,11 +229,16 @@ public class UserController {
 		user.setStatus(status);
 		userService.addUser(user);	
 		user = userService.getUserByUsername(username);
-		userService.addUserRole(user.getUserId(), roleId);
+		for (Integer roleId  : roleIds) {
+			userService.addUserRole(user.getUserId(), roleId);
+		}
+		
 		result = "{\"success\":true,\"msg\":\"添加成功\"}";
+		log.fatal("用户"+SecurityUtils.getSubject().getPrincipal()+"添加账号"+username+"，时间："+DateUtil.formatDateTime(new Date()));
 		return result;
 	}
 	
+	@RequiresPermissions(value="delete:user")
 	@RequestMapping(value="deleteUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String deleteUser(@RequestParam(value="ids")Integer[] ids) {
@@ -225,9 +250,11 @@ public class UserController {
 		}		
 		String result;		
 		result = "{\"success\":true,\"msg\":\"删除成功\"}";
+		log.fatal("用户"+SecurityUtils.getSubject().getPrincipal()+"删除账号"+"，时间："+DateUtil.formatDateTime(new Date()));
 		return result;
 	}
 	
+	@RequiresPermissions(value="update:user")
 	@RequestMapping(value="updateUser",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String updateUser(
@@ -252,6 +279,7 @@ public class UserController {
 		return result;
 	}
 	
+	@RequiresPermissions(value="update:user")
 	@RequestMapping(value = "/resetPwd", method = RequestMethod.POST,produces="text/html;charset=utf-8") 
 	@ResponseBody
 	public String resetPwd(@RequestParam(value="userId")Integer userId) {
@@ -262,25 +290,23 @@ public class UserController {
 	}
 	
 	@ExceptionHandler({Exception.class})
-	 @ResponseStatus(code=HttpStatus.UNAUTHORIZED)
+	@ResponseStatus(code=HttpStatus.UNAUTHORIZED)
+	@ResponseBody
 	 public String processUnauthenticatedException(ServletRequest request,ServletResponse response) {
-	   // log.info("==========进入了异常处理方法，使用@ExceptionHandler处理异常");
-	    /*ModelAndView mv = new ModelAndView();
-	    mv.addObject("ex", ex);	    
-	    // 为了区分，跳转掉另一个视图
-	    mv.setViewName("error/404");*/
-		String result = "{\"success\":false,\"msg\":\"请先登录！\"}";
-		try {
+	 
+		String result = "{\"success\":false,\"msg\":\"您无权操作！\"}";
+		/*try {
 			WebUtils.issueRedirect(request, response, "login?kickout=1");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		return "index";	    
+		}*/
+		return result;    
 	    }
 	
-	@RequestMapping("/forceLogout/{sessionId}")  
-    public void forceLogout(@PathVariable("sessionId") String sessionId,   
+	@RequestMapping("/{sessionId}/forceLogout") 
+	@ResponseBody
+    public String forceLogout(@PathVariable("sessionId") String sessionId,   
         RedirectAttributes redirectAttributes) {  
         try {  
             Session session = sessionDAO.readSession(sessionId);  
@@ -289,8 +315,9 @@ public class UserController {
                     "LOGOUT", Boolean.TRUE);  
             }  
         } catch (Exception e) {/*ignore*/}  
-       // redirectAttributes.addAttribute("forcelogout", "1");  //重定向携带的参数
-       // return "redirect:/login";  
+        /*redirectAttributes.addAttribute("forcelogout", "1");  //重定向携带的参数
+        return "redirect:/login";  */
+        return "success";
     }  
 	
 	@RequestMapping(value="getSessionId",method=RequestMethod.GET,produces="text/html;charset=utf-8")
@@ -304,10 +331,62 @@ public class UserController {
 				sid = cookie.getValue();
 				cookie.setMaxAge(-1);
 			}
+			
+			
+			
 		}
 		Session session = sessionDAO.readSession(sid);
 		//session.setAttribute("LOGOUT", Boolean.TRUE);
 		return sid+":"+sessionDAO.toString()+":"+session.toString();
 	}
+	
+	
+	@RequestMapping(value="getSessionList",method=RequestMethod.GET,produces="text/html;charset=utf-8")
+	public String getSessionList(HttpServletRequest request,HttpServletResponse response,Model model) {
+		Collection<Session> sessions = sessionDAO.getActiveSessions();//取出来的集合中除了session，还有linkedList,直接遍历会报异常
+		String s = sessions.toString();
+		String[] sids = s.split(",");//转换成字符串之后再根据“,”,分组，再根据id查找对应session放到集合中去
+		List<Session> list = new ArrayList<>();
+		Session session = null;
+		for (String sid : sids) {
+			if (StringUtils.contains(sid, "id=")) {
+				try {
+					session = sessionDAO.readSession(sid.substring(3,39));
+				} catch (Exception e) {
+					session=null;
+				}
+				if (session!=null&&session.getAttribute("org.apache.shiro.subject.support.DefaultSubjectContext_AUTHENTICATED_SESSION_KEY")!=null) {
+					list.add(session);
+				}
+			}
+		}		
+		 model.addAttribute("sessions", list);  
+	     model.addAttribute("sessionCount", list.size()); 
+		return "system/session"; 
+	}
+		
+	
+	/**
+	 * 重置密码
+	 */
+	@RequiresUser
+	@RequestMapping(value="/resetPwd",method=RequestMethod.GET,produces="application/json;charset=utf-8")
+	@ResponseBody
+	 public String resetPwd(@RequestParam(value="oldpwd")String oldpwd,
+			 @RequestParam(value="pwd")String pwd,
+			 @RequestParam(value="repwd")String repwd) {
+		 if (!pwd.equals(repwd)) {
+			return "{\"success\":false,\"msg\":\"两次密码不一致！\"}";
+		}
+	 	String username = SecurityUtils.getSubject().getPrincipal().toString();
+	 	User user = userService.getUserByUsername(username);
+	 	if (!user.getPassword().equals(new SimpleHash("MD5", oldpwd).toString())) {
+	 		return "{\"success\":false,\"msg\":\"原密码输入有误！\"}";
+		}	 		
+	 	user.setPassword(new SimpleHash("MD5", pwd).toString());   //设置新密码
+	 	userService.updateUser(user);
+	 	return "{\"success\":true,\"msg\":\"密码修改成功！\"}";
+	 }
+	
 	
 }

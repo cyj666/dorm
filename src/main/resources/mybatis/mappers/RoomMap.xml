@@ -3,223 +3,265 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dorm.mapper.RoomMapper">
- 	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
- 	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/> -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
 
-    
+
 
 	<select id="getRoom" resultType="Room" parameterType="room">
 		select * from rooms
 		<where>
-		<if test="roomId != null and roomId !='' ">
-       	and room_id = #{roomId}
-        </if>
-        <if test="factoryName != null and factoryName !='' ">
-       	and factory_name = #{factoryName}
-        </if>
-        <if test="building != null and building !='' ">
-       	and building = #{building}
-        </if>
-         <if test="unit != null and unit !='' ">
-       	and unit = #{unit}
-        </if>
-         <if test="floor != null and floor !='' ">
-       	and floor = #{floor}
-        </if>
-         <if test="type != null and type !='' ">
-       	and type = #{type}
-        </if>
-         <if test="remark != null and remark !='' ">
-       	and remark = #{remark}
-        </if>
-         <if test="roomNo != null and roomNo !='' ">
-       	and room_no = #{roomNo}
-        </if>
-         <if test="size != null and size !='' ">
-       	and size = #{size}
-        </if>
-        <if test="roomAdmin != null and roomAdmin !='' ">
-       	and room_admin = #{roomAdmin}
-        </if>
+			<if test="roomId != null and roomId !='' ">
+				and room_id = #{roomId}
+			</if>
+			<if test="factoryName != null and factoryName !='' ">
+				and factory_name = #{factoryName}
+			</if>
+			<if test="building != null and building !='' ">
+				and building = #{building}
+			</if>
+			<if test="unit != null and unit !='' ">
+				and unit = #{unit}
+			</if>
+			<if test="floor != null and floor !='' ">
+				and floor = #{floor}
+			</if>
+			<if test="type != null and type !='' ">
+				and type = #{type}
+			</if>
+			<if test="remark != null and remark !='' ">
+				and remark = #{remark}
+			</if>
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>
+			<if test="size != null and size !='' ">
+				and size = #{size}
+			</if>
+			<if test="roomAdmin != null and roomAdmin !='' ">
+				and room_admin = #{roomAdmin}
+			</if>
+			order by factory_name,unit,floor
 		</where>
 	</select>
-	
+
 	<select id="getRoomByIdList" resultType="Room" parameterType="java.util.List">
 		select * from rooms
 		<where>
-			room_id in 
-			<foreach collection="list" item="e" separator="," open="(" close=")">
-			#{e}
-			</foreach>		
+			room_id in
+			<foreach collection="list" item="e" separator="," open="("
+				close=")">
+				#{e}
+			</foreach>
 		</where>
 	</select>
-	
-	
+
+
 	<select id="getRooms" resultType="Room" parameterType="room">
 		select * from rooms
 		<where>
-		<if test="roomId != null and roomId !='' ">
-       	and room_id = #{roomId}
-        </if>
-        <if test="factoryName != null and factoryName !='' ">
-       	and factory_name = #{factoryName}
-        </if>
-        <if test="building != null and building !='' ">
-       	and building = #{building}
-        </if>
-         <if test="unit != null and unit !='' ">
-       	and unit = #{unit}
-        </if>
-         <if test="floor != null and floor !='' ">
-       	and floor = #{floor}
-        </if>
-         <if test="type != null and type !='' ">
-       	and type = #{type}
-        </if>
-         <if test="remark != null and remark !='' ">
-       	and remark = #{remark}
-        </if>
-         <if test="roomNo != null and roomNo !='' ">
-       	and room_no = #{roomNo}
-        </if>
-         <if test="size != null and size !='' ">
-       	and size = #{size}
-        </if>
-        <if test="roomAdmin != null and roomAdmin !='' ">
-       	and room_admin = #{roomAdmin}
-        </if>
+			<if test="roomId != null and roomId !='' ">
+				and room_id = #{roomId}
+			</if>
+			<if test="factoryName != null and factoryName !='' ">
+				and factory_name = #{factoryName}
+			</if>
+			<if test="building != null and building !='' ">
+				and building = #{building}
+			</if>
+			<if test="unit != null and unit !='' ">
+				and unit = #{unit}
+			</if>
+			<if test="floor != null and floor !='' ">
+				and floor = #{floor}
+			</if>
+			<if test="type != null and type !='' ">
+				and type = #{type}
+			</if>
+			<if test="remark != null and remark !='' ">
+				and remark = #{remark}
+			</if>
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>
+			<if test="size != null and size !='' ">
+				and size = #{size}
+			</if>
+			<if test="roomAdmin != null and roomAdmin !='' ">
+				and room_admin = #{roomAdmin}
+			</if>
 		</where>
-	</select> 
-	
-	<select id="getAllRoom" resultType="Room">
-		select * from rooms
 	</select>
-	
 
+
+	<select id="getAllRoom" resultType="Room">
+		select * from rooms order by
+		factory_name,unit,floor
+	</select>
+
+	<resultMap id="roomMap" type="com.dorm.pojo.Room">
+		<id property="roomId" column="room_id" />
+		<result property="factoryName" column="factory_name" />
+		<result property="building" column="building" />
+		<result property="unit" column="unit" />
+		<result property="floor" column="floor" />
+		<result property="type" column="type" />
+		<result property="remark" column="remark" />
+		<result property="size" column="size" />
+		<result property="roomAdmin" column="room_admin" />
+		<result property="roomNo" column="room_no" />
+		<!-- 进行 多表关联插叙，先关联user和role -->
+		<collection property="employees"  ofType="com.dorm.pojo.Employee">
+		<id property="employeeId" column="employee_id" />
+		<result property="employeeName" column="employee_name" />
+		<result property="employeeSex" column="employee_sex" />
+		<result property="employeeJob" column="employee_job" />
+		<result property="employeeWorkplace" column="employee_workplace" />
+		<result property="employeeFamily" column="employee_family" />
+		<result property="employeeRemark" column="employee_remark" />
+		<result property="employeeNo" column="employee_no" />
+		</collection>
+	</resultMap>
 	
-	<insert id="addRoom" useGeneratedKeys="true" keyProperty="room_id" parameterType="room">
+	<select id="getAllRoomDetails" resultMap="roomMap">
+		SELECT * FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
+		LEFT JOIN employees e ON er.employee_no = e.employee_no
+	</select>
+
+	<insert id="addRoom" useGeneratedKeys="true" keyProperty="room_id"
+		parameterType="room">
 		insert into
 		rooms(factory_name,building,unit,floor,type,remark,room_no,size,room_admin)
 		values(#{factoryName},#{building},#{unit},#{floor},#{type},#{remark},#{roomNo},#{size},#{roomAdmin})
 	</insert>
-	
-	<insert id="addRoomByList" useGeneratedKeys="true"  parameterType="java.util.List">
+
+	<insert id="addRoomByList" useGeneratedKeys="true"
+		parameterType="java.util.List">
 		insert into
 		rooms(factory_name,building,unit,floor,type,remark,room_no,size,room_admin)
-		values 
-		 <foreach collection="list" item="e" index="i" separator=",">
-          (#{factoryName},#{building},#{unit},#{floor},#{type},#{remark},#{roomNo},#{size},#{roomAdmin}) 
-        </foreach>		
+		values
+		<foreach collection="list" item="e" index="i" separator=",">
+			(#{factoryName},#{building},#{unit},#{floor},#{type},#{remark},#{roomNo},#{size},#{roomAdmin})
+		</foreach>
 	</insert>
-	
+
 
 
 	<delete id="deleteRoom" parameterType="room">
-        delete  from rooms
+		delete from rooms
 		<where>
-        <if test="roomId != null and roomId !='' ">
-       	and room_id = #{roomId}
-        </if> 
-        <if test="roomNo != null and roomNo !='' ">
-       	and room_no = #{roomNo}
-        </if>
-        </where>
-    </delete>
-    
-    <delete id="deleteroomByList" parameterType="list">
-        delete  from rooms
+			<if test="roomId != null and roomId !='' ">
+				and room_id = #{roomId}
+			</if>
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteroomByList" parameterType="list">
+		delete from rooms
 		<where>
 			room_id in
-        <foreach collection="list" item="e" index="i" separator=",">
-          (#{e.roomId}) 
-        </foreach>	
-        </where>
-    </delete>
-    
-         
-    <update id="updateRoom" parameterType="room">
-    update rooms
-    <set>
-    	<if test="roomId != null and roomId !='' ">
-       	 room_id = #{roomId},
-        </if>
-        <if test="factoryName != null and factoryName !='' ">
-       	 factory_name = #{factoryName},
-        </if>
-        <if test="building != null and building !='' ">
-       	building = #{building},
-        </if>
-         <if test="unit != null and unit !='' ">
-       	 unit = #{unit},
-        </if>
-         <if test="floor != null and floor !='' ">
-       	floor = #{floor},
-        </if>
-         <if test="type != null and type !='' ">
-       	type = #{type},
-        </if>
-         <if test="remark != null and remark !='' ">
-       remark = #{remark},
-        </if>
-         <if test="roomNo != null and roomNo !='' ">
-       	room_no = #{roomNo},
-        </if>
-        <if test="size != null and size !='' ">
-       	size = #{size},
-        </if>      
-        <if test="roomAdmin != null and roomAdmin !='' ">
-       	room_admin = #{roomAdmin},
-        </if>
-    </set>
-    <where>
-    	room_id = #{roomId}
-    </where>  
-    </update>
-    
-    
-     <update id="updateRoomByList" parameterType="list">
-    update rooms
-      	  <set>
-		factory_name = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.factoryName}
-       	 </foreach>
-        ,building = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.building}
-       	 </foreach>
-       	,floor = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.floor}
-       	 </foreach>
-       	 ,type = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.type}
-       	 </foreach>
-       	 ,remark = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.remark}
-       	 </foreach>
-       	 ,roomNo = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.roomNo}
-       	 </foreach> 
-       	  ,size = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.size}
-       	 </foreach> 
-       	 ,room_admin = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case room_id" close="end">
-       	 when #{e.roomId} then #{e.roomAdmin}
-       	 </foreach>
-    </set>
-    <where>
-    room_id in 
-    	<foreach collection="list" item="e" index="i" separator="," open="(" close=")">
-    	#{e.roomId} 
-    	</foreach>
-    </where>  
-    </update>
+			<foreach collection="list" item="e" index="i" separator=",">
+				(#{e.roomId})
+			</foreach>
+		</where>
+	</delete>
+
+
+	<update id="updateRoom" parameterType="room">
+		update rooms
+		<set>
+			<if test="roomId != null and roomId !='' ">
+				room_id = #{roomId},
+			</if>
+			<if test="factoryName != null and factoryName !='' ">
+				factory_name = #{factoryName},
+			</if>
+			<if test="building != null and building !='' ">
+				building = #{building},
+			</if>
+			<if test="unit != null and unit !='' ">
+				unit = #{unit},
+			</if>
+			<if test="floor != null and floor !='' ">
+				floor = #{floor},
+			</if>
+			<if test="type != null and type !='' ">
+				type = #{type},
+			</if>
+			<if test="remark != null and remark !='' ">
+				remark = #{remark},
+			</if>
+			<if test="roomNo != null and roomNo !='' ">
+				room_no = #{roomNo},
+			</if>
+			<if test="size != null and size !='' ">
+				size = #{size},
+			</if>
+			<if test="roomAdmin != null and roomAdmin !='' ">
+				room_admin = #{roomAdmin},
+			</if>
+		</set>
+		<where>
+			room_id = #{roomId}
+		</where>
+	</update>
+
+
+	<update id="updateRoomByList" parameterType="list">
+		update rooms
+		<set>
+			factory_name =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.factoryName}
+			</foreach>
+			,building =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.building}
+			</foreach>
+			,floor =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.floor}
+			</foreach>
+			,type =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.type}
+			</foreach>
+			,remark =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.remark}
+			</foreach>
+			,roomNo =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.roomNo}
+			</foreach>
+			,size =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.size}
+			</foreach>
+			,room_admin =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.roomAdmin}
+			</foreach>
+		</set>
+		<where>
+			room_id in
+			<foreach collection="list" item="e" index="i" separator=","
+				open="(" close=")">
+				#{e.roomId}
+			</foreach>
+		</where>
+	</update>
 
 
 

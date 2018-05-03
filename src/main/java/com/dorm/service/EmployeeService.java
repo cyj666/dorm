@@ -16,6 +16,7 @@ public interface EmployeeService {
 	public List<Employee> getEmployeeByNames(String employeeName);  //防止同名
 	public List<Employee> getEmployees(Employee employee); 
 	public List<Employee> getAllEmployee();
+	public List<Employee> getAllEmployeeDetail();
 	
 	public List<Employee> getEmployeeByIdList(List<Integer> employeeIds);//批量查询ID
 	public List<Employee> getEmployeeByNameArray(String[] employeeNames);//批量查询姓名
@@ -32,5 +33,6 @@ public interface EmployeeService {
 	public void updateEmployee(Employee employee);//根据employeeId删除
 	public void updateUserByList(List<Employee> employees);
 	
+	public boolean isLive(String employeeNo);
 	
 }

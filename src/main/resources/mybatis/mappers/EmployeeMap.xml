@@ -3,208 +3,256 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dorm.mapper.EmployeeMapper">
- 	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
- 	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/> -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
 
-    
+
 
 	<select id="getEmployee" resultType="Employee" parameterType="employee">
 		select * from employees
 		<where>
-		<if test="employeeId != null and employeeId !='' ">
-       	and employee_id = #{employeeId}
-        </if>
-        <if test="employeeName != null and employeeName !='' ">
-       	and employee_name = #{employeeName}
-        </if>
-        <if test="employeeNo != null and employeeNo !='' ">
-       	and employee_no = #{employeeNo}
-        </if>
+			<if test="employeeId != null and employeeId !='' ">
+				and employee_id = #{employeeId}
+			</if>
+			<if test="employeeName != null and employeeName !='' ">
+				and employee_name = #{employeeName}
+			</if>
+			<if test="employeeNo != null and employeeNo !='' ">
+				and employee_no = #{employeeNo}
+			</if>
 		</where>
 	</select>
-	
-	<select id="getEmployeeByIdList" resultType="Employee" parameterType="java.util.List">
+
+	<select id="getEmployeeByIdList" resultType="Employee"
+		parameterType="java.util.List">
 		select * from employees
 		<where>
-			employee_id in 
-			<foreach collection="list" item="e" separator="," open="(" close=")">
-			#{e}
-			</foreach>		
+			employee_id in
+			<foreach collection="list" item="e" separator="," open="("
+				close=")">
+				#{e}
+			</foreach>
 		</where>
 	</select>
-	<select id="getEmployeeByNameArray" resultType="Employee" parameterType="string">
+	<select id="getEmployeeByNameArray" resultType="Employee"
+		parameterType="string">
 		select * from employees
 		<where>
-			employee_name in 
-			<foreach collection="array" item="e" separator="," open="(" close=")">
-			#{e}
-			</foreach>		
-		</where>
-	</select><select id="getEmployeeByNoArray" resultType="Employee" parameterType="string">
-		select * from employees
-		<where>
-			employee_no in 
-			<foreach collection="array" item="e" separator="," open="(" close=")">
-			#{e}
-			</foreach>		
+			employee_name in
+			<foreach collection="array" item="e" separator="," open="("
+				close=")">
+				#{e}
+			</foreach>
 		</where>
 	</select>
-	
-	
-	
+	<select id="getEmployeeByNoArray" resultType="Employee"
+		parameterType="string">
+		select * from employees
+		<where>
+			employee_no in
+			<foreach collection="array" item="e" separator="," open="("
+				close=")">
+				#{e}
+			</foreach>
+		</where>
+	</select>
+
+
+
 	<select id="getEmployees" resultType="Employee" parameterType="employee">
 		select * from employees
 		<where>
-		<if test="employeeId != null and employeeId !='' ">
-       	and employee_id = #{employeeId}
-        </if>
-        <if test="employeeName != null and employeeName !='' ">
-       	and employee_name = #{employeeName}
-        </if>
-        <if test="employeeNo != null and employeeNo !='' ">
-       	and employee_no = #{employeeNo}
-        </if>
-         <if test="employeeSex != null and employeeSex !='' ">
-       	and employee_sex = #{employeeSex}
-        </if>
-         <if test="employeeJob != null and employeeJob !='' ">
-       	and employee_job = #{employeeJob}
-        </if>
-         <if test="employeeWorkplace != null and employeeWorkplace !='' ">
-       	and employee_workplace = #{employeeWorkplace}
-        </if>
-         <if test="employeeFamily != null and employeeFamily !='' ">
-       	and employee_family = #{employeeFamily}
-        </if>
-         <if test="employeeRemark != null and employeeRemark !='' ">
-       	and employee_remark = #{employeeRemark}
-        </if>
+			<if test="employeeId != null and employeeId !='' ">
+				and employee_id = #{employeeId}
+			</if>
+			<if test="employeeName != null and employeeName !='' ">
+				and employee_name = #{employeeName}
+			</if>
+			<if test="employeeNo != null and employeeNo !='' ">
+				and employee_no = #{employeeNo}
+			</if>
+			<if test="employeeSex != null and employeeSex !='' ">
+				and employee_sex = #{employeeSex}
+			</if>
+			<if test="employeeJob != null and employeeJob !='' ">
+				and employee_job = #{employeeJob}
+			</if>
+			<if test="employeeWorkplace != null and employeeWorkplace !='' ">
+				and employee_workplace = #{employeeWorkplace}
+			</if>
+			<if test="employeeFamily != null and employeeFamily !='' ">
+				and employee_family = #{employeeFamily}
+			</if>
+			<if test="employeeRemark != null and employeeRemark !='' ">
+				and employee_remark = #{employeeRemark}
+			</if>
 		</where>
-	</select> 
-	
+	</select>
+
 	<select id="getAllEmployee" resultType="Employee">
 		select * from employees
 	</select>
-	
 
-	
 
-	<insert id="addEmployee" useGeneratedKeys="true" keyProperty="employee_id" parameterType="employee">
+	<resultMap id="employeeMap" type="com.dorm.pojo.Employee">
+		<id property="employeeId" column="employee_id" />
+		<result property="employeeName" column="employee_name" />
+		<result property="employeeSex" column="employee_sex" />
+		<result property="employeeJob" column="employee_job" />
+		<result property="employeeWorkplace" column="employee_workplace" />
+		<result property="employeeFamily" column="employee_family" />
+		<result property="employeeRemark" column="employee_remark" />
+		<result property="employeeNo" column="employee_no" />
+		<!-- 进行 多表关联插叙，关联房间 -->
+		<association property="room" column="room" javaType="com.dorm.pojo.Room">
+			<id property="roomId" column="room_id" />
+			<result property="factoryName" column="factory_name" />
+			<result property="building" column="building" />
+			<result property="unit" column="unit" />
+			<result property="floor" column="floor" />
+			<result property="type" column="type" />
+			<result property="remark" column="remark" />
+			<result property="roomNo" column="room_no" />
+			<result property="size" column="size" />
+			<result property="roomAdmin" column="roomAdmin" />
+			
+		</association>
+	</resultMap>
+
+	<select id="getAllEmployeeDetail" resultMap="employeeMap">
+		select * from
+		employees e LEFT JOIN employees_rooms er ON e.employee_no =
+		er.employee_no
+		LEFT JOIN rooms r ON er.room_no = r.room_no
+		WHERE er.date_out IS NULL
+	</select>
+
+	<insert id="addEmployee" useGeneratedKeys="true" keyProperty="employee_id"
+		parameterType="employee">
 		insert into
 		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no)
 		values(#{employeeName},#{employeeSex},#{employeeJob},#{employeeWorkplace},#{employeeFamily},#{employeeRemark},#{employeeNo})
 	</insert>
-	
-	<insert id="addEmployeeByList" useGeneratedKeys="true"  parameterType="java.util.List">
+
+	<insert id="addEmployeeByList" useGeneratedKeys="true"
+		parameterType="java.util.List">
 		insert into
 		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no)
-		values 
-		 <foreach collection="list" item="e" index="i" separator=",">
-          (#{e.employeeName},#{e.employeeSex},#{e.employeeJob},#{e.employeeWorkplace},#{e.employeeFamily},
-          #{e.employeeRemark},#{e.employeeNo}) 
-        </foreach>		
+		values
+		<foreach collection="list" item="e" index="i" separator=",">
+			(#{e.employeeName},#{e.employeeSex},#{e.employeeJob},#{e.employeeWorkplace},#{e.employeeFamily},
+			#{e.employeeRemark},#{e.employeeNo})
+		</foreach>
 	</insert>
-	
+
 
 
 	<delete id="deleteEmployee" parameterType="employee">
-        delete  from Employees
+		delete from Employees
 		<where>
-        <if test="employeeId != null and employeeId !='' ">
-       	and employee_id = #{employeeId}
-        </if>
-        <if test="employeeName != null and employeeName !='' ">
-       	and employee_name = #{employeeName}
-        </if>
-        <if test="employeeNo != null and employeeNo !='' ">
-       	and employee_no = #{employeeNo}
-        </if>
-        </where>
-    </delete>
-    
-    <delete id="deleteEmployeeByList" parameterType="list">
-        delete  from Employees
+			<if test="employeeId != null and employeeId !='' ">
+				and employee_id = #{employeeId}
+			</if>
+			<if test="employeeName != null and employeeName !='' ">
+				and employee_name = #{employeeName}
+			</if>
+			<if test="employeeNo != null and employeeNo !='' ">
+				and employee_no = #{employeeNo}
+			</if>
+		</where>
+	</delete>
+
+	<delete id="deleteEmployeeByList" parameterType="list">
+		delete from Employees
 		<where>
 			employee_id in
-        <foreach collection="list" item="e" index="i" separator=",">
-          (#{e.employeeId}) 
-        </foreach>	
-        </where>
-    </delete>
-         
-    <update id="updateEmployee" parameterType="employee">
-    update employees
-    <set>
-    	<if test="employeeId != null and employeeId !='' ">
-       	employee_id = #{employeeId},
-        </if>
-        <if test="employeeName != null and employeeName !='' ">
-       	employee_name = #{employeeName},
-        </if>
-        <if test="employeeNo != null and employeeNo !='' ">
-       employee_no = #{employeeNo},
-        </if>
-         <if test="employeeSex != null and employeeSex !='' ">
-       	employee_sex = #{employeeSex},
-        </if>
-         <if test="employeeJob != null and employeeJob !='' ">
-       	employee_job = #{employeeJob},
-        </if>
-         <if test="employeeWorkplace != null and employeeWorkplace !='' ">
-       	employee_workplace = #{employeeWorkplace},
-        </if>
-         <if test="employeeFamily != null and employeeFamily !='' ">
-       	employee_family = #{employeeFamily},
-        </if>
-         <if test="employeeRemark != null and employeeRemark !='' ">
-       	employee_remark = #{employeeRemark},
-        </if>
-    </set>
-    <where>
-    	employee_id = #{employeeId}
-    </where>  
-    </update>
-    
-     <update id="updateEmployeeByList" parameterType="list">
-    update employees
-      	  <set>
-		employee_sex = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case employee_id" close="end">
-       	 when #{e.employeeId} then #{e.employeeSex}
-       	 </foreach>
-        ,employee_name = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case employee_id" close="end">
-       	 when #{e.employeeId} then #{e.employeeName}
-       	 </foreach>
-       	,employee_job = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case employee_id" close="end">
-       	 when #{e.employeeId} then #{e.employeeJob}
-       	 </foreach>
-       	 ,employee_workplace = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case employee_id" close="end">
-       	 when #{e.employeeId} then #{e.employeeWorkplace}
-       	 </foreach>
-       	 ,employee_family = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case employee_id" close="end">
-       	 when #{e.employeeId} then #{e.employeeFamily}
-       	 </foreach>
-       	 ,employee_remark = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case employee_id" close="end">
-       	 when #{e.employeeId} then #{e.employeeRemark}
-       	 </foreach>
-       	 ,employee_no = 
-       	 <foreach collection="list" item="e" index="i" separator=" " open="case employee_id" close="end">
-       	 when #{e.employeeId} then #{e.employeeNo}
-       	 </foreach>
-    </set>
-    <where>
-    employee_id in 
-    	<foreach collection="list" item="e" index="i" separator="," open="(" close=")">
-    	#{e.employeeId} 
-    	</foreach>
-    </where>  
-    </update>
-    
+			<foreach collection="list" item="e" index="i" separator=",">
+				(#{e.employeeId})
+			</foreach>
+		</where>
+	</delete>
+
+	<update id="updateEmployee" parameterType="employee">
+		update employees
+		<set>
+			<if test="employeeId != null and employeeId !='' ">
+				employee_id = #{employeeId},
+			</if>
+			<if test="employeeName != null and employeeName !='' ">
+				employee_name = #{employeeName},
+			</if>
+			<if test="employeeNo != null and employeeNo !='' ">
+				employee_no = #{employeeNo},
+			</if>
+			<if test="employeeSex != null and employeeSex !='' ">
+				employee_sex = #{employeeSex},
+			</if>
+			<if test="employeeJob != null and employeeJob !='' ">
+				employee_job = #{employeeJob},
+			</if>
+			<if test="employeeWorkplace != null and employeeWorkplace !='' ">
+				employee_workplace = #{employeeWorkplace},
+			</if>
+			<if test="employeeFamily != null and employeeFamily !='' ">
+				employee_family = #{employeeFamily},
+			</if>
+			<if test="employeeRemark != null and employeeRemark !='' ">
+				employee_remark = #{employeeRemark},
+			</if>
+		</set>
+		<where>
+			employee_id = #{employeeId}
+		</where>
+	</update>
+
+	<update id="updateEmployeeByList" parameterType="list">
+		update employees
+		<set>
+			employee_sex =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeSex}
+			</foreach>
+			,employee_name =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeName}
+			</foreach>
+			,employee_job =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeJob}
+			</foreach>
+			,employee_workplace =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeWorkplace}
+			</foreach>
+			,employee_family =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeFamily}
+			</foreach>
+			,employee_remark =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeRemark}
+			</foreach>
+			,employee_no =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeNo}
+			</foreach>
+		</set>
+		<where>
+			employee_id in
+			<foreach collection="list" item="e" index="i" separator=","
+				open="(" close=")">
+				#{e.employeeId}
+			</foreach>
+		</where>
+	</update>
+
 
 
 </mapper>

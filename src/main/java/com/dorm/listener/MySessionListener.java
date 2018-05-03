@@ -2,7 +2,11 @@ package com.dorm.listener;
 
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionListener;
-
+/**
+ * 会话监听器，以后扩展用
+ * @author DELL
+ *
+ */
 public class MySessionListener implements SessionListener {
 
 	

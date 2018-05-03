@@ -2,6 +2,7 @@ package com.dorm.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -54,12 +55,41 @@ public class RoomEmployeeDetailsController {
 			@RequestParam(value="dateOut",required=false)String dateOut) throws ParseException {
 		PageHelper.startPage(pageNum, pageSize);
 		RoomEmployeeDetails details = new RoomEmployeeDetails();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		details.setDateIn(dateIn==null||dateIn.equals("")?null:sdf.parse(dateIn));
-		details.setDateOut(dateOut==null||dateOut.equals("")?null:sdf.parse(dateOut));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");		
+		details.setDateIn(dateIn==null||dateIn.equals("")?null:sdf.parse(dateIn));		
+		details.setDateOut(dateOut==null||dateOut.equals("")?null:sdf.parse(dateOut));	
 		details.setEmployeeNo(employeeNo);
 		details.setRoomNo(roomNo);
-		List<RoomEmployeeDetails> list = roomEmployeeDetailsService.getDetails(details);
+		List<RoomEmployeeDetails> list = new ArrayList<>();
+		/*if (isAll) { */  //判断继而选择是否输出历史数据
+			 list = roomEmployeeDetailsService.getDetails(details);
+		/*}else {
+			 list = roomEmployeeDetailsService.getDetailsNow(details);
+		}*/		
+		PageInfo<RoomEmployeeDetails> p = new PageInfo<>(list);
+		long total = p.getTotal();
+		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
+		String JSON = "{\"total\":"+total+",\"rows\":"+json+"}";
+		return JSON;
+	}
+	
+	@RequestMapping(value="/getHistory",produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getHistory(@RequestParam(value="page",defaultValue="1")int pageNum,
+			@RequestParam(value="rows",defaultValue="5")int pageSize,
+			@RequestParam(value="roomNo",required=false)String roomNo,
+			@RequestParam(value="employeeNo",required=false)String employeeNo,
+			@RequestParam(value="dateIn",required=false)String dateIn,
+			@RequestParam(value="dateOut",required=false)String dateOut) throws ParseException {
+		PageHelper.startPage(pageNum, pageSize);
+		RoomEmployeeDetails details = new RoomEmployeeDetails();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");		
+		details.setDateIn(dateIn==null||dateIn.equals("")?null:sdf.parse(dateIn));		
+		details.setDateOut(dateOut==null||dateOut.equals("")?null:sdf.parse(dateOut));	
+		details.setEmployeeNo(employeeNo);
+		details.setRoomNo(roomNo);
+		List<RoomEmployeeDetails> list = new ArrayList<>();	
+		 list = roomEmployeeDetailsService.getAllHistoryDetails();
 		PageInfo<RoomEmployeeDetails> p = new PageInfo<>(list);
 		long total = p.getTotal();
 		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
@@ -122,7 +152,9 @@ public class RoomEmployeeDetailsController {
 		}
 		for (RoomEmployeeDetails r : list) {
 			r.setDateOut(new Date());
-			roomEmployeeDetailsService.updateRoom(r);
+			//roomEmployeeDetailsService.updateRoom(r);//注释掉之前的写法
+			roomEmployeeDetailsService.deleteDetails(r);//先删除记录表
+			roomEmployeeDetailsService.addHistoryDetails(r);//再添加到记录表中去。
 		}
 		RoomEmployeeDetails r = new RoomEmployeeDetails();
 		r.setDateIn(new Date());
@@ -146,7 +178,9 @@ public class RoomEmployeeDetailsController {
 		}
 		for (RoomEmployeeDetails r : list) {
 			r.setDateOut(new Date());
-			roomEmployeeDetailsService.updateRoom(r);
+			//roomEmployeeDetailsService.updateRoom(r);  //注释掉之前的写法，尝试改用新的方法
+			roomEmployeeDetailsService.deleteDetails(r);//先删除记录表
+			roomEmployeeDetailsService.addHistoryDetails(r);//再添加到记录表中去。
 		}
 		String msg ="搬离成功，工号"+employeeNo+"的员工已经从宿舍"+list.get(0).getRoomNo()+"搬离。";
 		String result = "{\"success\":true,\"msg\":\""+msg+"\"}";
@@ -159,7 +193,19 @@ public class RoomEmployeeDetailsController {
 		for (Integer i : ids) {
 			RoomEmployeeDetails details = new RoomEmployeeDetails();
 			details.setId(i);
-			roomEmployeeDetailsService.deleteDetails(details);
+			roomEmployeeDetailsService.deleteDetails(details);  //都删
+		}
+		String result = "{\"success\":true,\"msg\":\"删除成功！\"}";
+		return result;
+	}
+	
+	@RequestMapping(value="/deleteHistoryDetails",produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String deleteHistoryDetails(@RequestParam(value="ids")Integer[] ids) {
+		for (Integer i : ids) {
+			RoomEmployeeDetails details = new RoomEmployeeDetails();
+			details.setId(i);
+			roomEmployeeDetailsService.deleteHistoryDetails(details);
 		}
 		String result = "{\"success\":true,\"msg\":\"删除成功！\"}";
 		return result;

@@ -21,6 +21,7 @@
 				<th data-options="field:'roomAdmin',width:30">宿管</th>
 				<th data-options="field:'type',width:30">类型</th>
 				<th data-options="field:'size',width:40">房间规格（人/房间）</th>
+				<th data-options="field:'employees',width:40" formatter="manageEmployee">已住人数</th>
 				<th data-options="field:'remark',width:80">备注</th>
 			</tr>
 		</thead>
@@ -98,7 +99,7 @@
 		 $('#dg').datagrid({  
 	            title : '宿舍信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,
+	            pageSize : 15,
 	            pageList : [ 5, 10, 15, 20 ],
 	            nowrap : true,
 	            striped : true,
@@ -121,7 +122,7 @@
 		 $('#dg').datagrid({  
 	            title : '宿舍信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,
+	            pageSize : 15,
 	            pageList : [ 5, 10, 15, 20 ],
 	            nowrap : true,
 	            striped : true,
@@ -238,7 +239,14 @@
 				});
 			}
 		}
-	
+		function manageEmployee(value, row, index) {
+			if (value != null) {
+				var arr =  value.length;				
+				return arr+"人";
+			} else {
+				return "0";
+			}
+		}
 	</script>
 	
 </body>

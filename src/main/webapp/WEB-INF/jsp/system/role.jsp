@@ -73,7 +73,7 @@
 	            toolbar:"#toolbar",  
 	            url:'getRolesDetails',  
 	            loadMsg : '数据装载中......',  
-	            singleSelect:true,  
+	            singleSelect:false,  
 	            fitColumns:true,  
 	            checkOnSelect:true,
 	            selectOnCheck:true,

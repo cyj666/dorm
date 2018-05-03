@@ -1,6 +1,7 @@
 package com.dorm.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,8 @@ import com.dorm.pojo.User;
 import com.dorm.service.EmployeeService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLDataException;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 @Controller
 public class EmployeeController {
@@ -45,21 +48,19 @@ public class EmployeeController {
 	public static final Logger log = Logger.getLogger(EmployeeController.class);
 	
 	@Autowired
-	@Lazy
+	@Lazy //延迟加载，为了使@RequiresPermissions注解生效
 	EmployeeService employeeService;
+
 	
-	@Cacheable(key="'getAllEmployee'",value="myCache")
 	@RequiresUser
 	//@RequiresRoles(value={"admin"})
 	@RequiresPermissions(value= {"get:employee"})
 	@RequestMapping(value="getAllEmployee",method=RequestMethod.GET,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getAllEmployee(@RequestParam(value="page",defaultValue="1")int pageNum,
-			@RequestParam(value="rows",defaultValue="5")int pageSize) {
-		log.debug("*************************************************我是缓存方法*************************************************");
-		System.out.println("*************************************************我是缓存方法*************************************************");
+			@RequestParam(value="rows",defaultValue="5")int pageSize) {		
 		PageHelper.startPage(pageNum, pageSize);
-		List<Employee> list = employeeService.getAllEmployee();
+		List<Employee> list = employeeService.getAllEmployeeDetail();
 		PageInfo<Employee> p = new PageInfo<>(list);
 		long total = p.getTotal();
 		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
@@ -67,24 +68,22 @@ public class EmployeeController {
 		return JSON;
 	}
 	
+	
 	 @ExceptionHandler({Exception.class})
 	 @ResponseStatus(code=HttpStatus.UNAUTHORIZED)
-	 public String processUnauthenticatedException(ServletRequest request,ServletResponse response) {
-	   // log.info("==========进入了异常处理方法，使用@ExceptionHandler处理异常");
-	    /*ModelAndView mv = new ModelAndView();
-	    mv.addObject("ex", ex);	    
-	    // 为了区分，跳转掉另一个视图
-	    mv.setViewName("error/404");*/
-		String result = "{\"success\":false,\"msg\":\"请先登录！\"}";
-		try {
-			WebUtils.issueRedirect(request, response, "login?kickout=1");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "index";	    
+	 @ResponseBody
+	 public String processUnauthorizedException(ServletRequest request,ServletResponse response) {	 		
+		String result = "{\"success\":false,\"msg\":\"您无权操作！\"}";
+		return result;	 
 	    }
 	
+	/* @ExceptionHandler({MySQLIntegrityConstraintViolationException.class})
+	 @ResponseStatus(code=HttpStatus.INTERNAL_SERVER_ERROR)
+	 @ResponseBody
+	 public String processSQLException(ServletRequest request,ServletResponse response) {	 		
+		String result = "{\"success\":false,\"msg\":\"数据库操作异常！检查工号是否唯一？\"}";
+		return result;	 
+	    }*/
 	 
 	@RequiresUser
 	//@RequiresRoles(value={"admin"})
@@ -107,6 +106,9 @@ public class EmployeeController {
 		List<Employee> employees = employeeService.getEmployees(employee);
 		PageInfo<Employee> p = new PageInfo<>(employees);
 		long total = p.getTotal();
+		for (Employee e : p.getList()) {
+			
+		}
 		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
 		String JSON = "{\"total\":"+total+",\"rows\":"+json+"}";
 		return JSON;
@@ -154,13 +156,20 @@ public class EmployeeController {
 		employee.setEmployeeFamily(employeeFamily);
 		employee.setEmployeeWorkplace(employeeWorkplace);
 		employee.setEmployeeRemark(employeeRemark);	
-		employeeService.addEmployee(employee);
-		result = "{\"success\":true,\"msg\":\"添加成功\"}";
+		try {
+			employeeService.addEmployee(employee);
+			result = "{\"success\":true,\"msg\":\"添加成功\"}";
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("添加数据出现异常！异常原因如下："+e);
+			result = "{\"success\":true,\"msg\":\"添加失败\"}";
+		}
+		
 		return result;
 	}
 	
 	
-	@CacheEvict(key="'getAllEmployee'",beforeInvocation=false)
+	//@CacheEvict(key="'getAllEmployee'",beforeInvocation=false)
 	@RequiresUser
 	//@RequiresRoles(value={"admin"})
 	@RequiresPermissions(value= {"update:employee"})

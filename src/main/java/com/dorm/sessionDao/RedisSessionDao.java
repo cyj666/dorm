@@ -70,6 +70,9 @@ public class RedisSessionDao extends EnterpriseCacheSessionDAO {
     
     // 把byte还原为session
     public Session byteToSession(byte[] bytes){
+    	if (bytes==null||bytes.length==0) {
+			return null;
+		}
         ByteArrayInputStream bi = new ByteArrayInputStream(bytes);
         ObjectInputStream in;
         SimpleSession session = null;

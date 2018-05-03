@@ -23,7 +23,7 @@
 		<h1>宿舍管理系统</h1>
 		<form class="login-form" action="main" method="post" check="login" >		
 			<label>  	
-				<input type="text" id="username" name="username" placeholder="用户名">
+				<input type="text" id="username" name="username" placeholder="用户名" >
 			</label>
 			<label>
 				<input type="password" id="password" name="password" placeholder="密码">

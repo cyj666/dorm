@@ -93,4 +93,10 @@ public class RoomServiceImpl implements RoomService {
 		roomMapper.updateRoomByList(rooms);
 	}
 
+	@Override
+	public List<Room> getAllRoomDetails() {
+		// TODO Auto-generated method stub
+		return roomMapper.getAllRoomDetails();
+	}
+
 }

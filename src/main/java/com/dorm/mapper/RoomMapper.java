@@ -10,6 +10,7 @@ public interface RoomMapper {
 	public List<Room> getRoomByIdList(List<Room> roomId);
 	public List<Room> getRooms(Room room);
 	public List<Room> getAllRoom();
+	public List<Room> getAllRoomDetails();
 	
 	public void addRoom(Room room);
 	public void addRoomByList(List<Room> rooms);

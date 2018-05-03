@@ -58,6 +58,9 @@ public class RoomEmployeeDetailsServiceImpl implements RoomEmployeeDetailsServic
 		roomEmployeeDetailsMapper.addDetailsByList(details);
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void deleteDetails(RoomEmployeeDetails roomEmployeeDetails) {
 		// TODO Auto-generated method stub
@@ -86,6 +89,30 @@ public class RoomEmployeeDetailsServiceImpl implements RoomEmployeeDetailsServic
 	public List<RoomEmployeeDetails> getLivingByRoomNo(String roomNo) {
 		// TODO Auto-generated method stub
 		return roomEmployeeDetailsMapper.getLivingByRoomNo(roomNo);
+	}
+
+	@Override
+	public List<RoomEmployeeDetails> getDetailsNow(RoomEmployeeDetails roomEmployeeDetails) {
+		// TODO Auto-generated method stub
+		return roomEmployeeDetailsMapper.getDetailsNow(roomEmployeeDetails);
+	}
+
+	@Override
+	public void addHistoryDetails(RoomEmployeeDetails roomEmployeeDetails) {
+		// TODO Auto-generated method stub
+		roomEmployeeDetailsMapper.addHistoryDetails(roomEmployeeDetails);
+	}
+
+	@Override
+	public void deleteHistoryDetails(RoomEmployeeDetails roomEmployeeDetails) {
+		// TODO Auto-generated method stub
+		roomEmployeeDetailsMapper.deleteHistoryDetails(roomEmployeeDetails);
+	}
+
+	@Override
+	public List<RoomEmployeeDetails> getAllHistoryDetails() {
+		// TODO Auto-generated method stub
+		return roomEmployeeDetailsMapper.getAllHistoryDetails();
 	}
 
 

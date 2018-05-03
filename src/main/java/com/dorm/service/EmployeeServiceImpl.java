@@ -7,12 +7,16 @@ import org.springframework.stereotype.Service;
 
 import com.dorm.mapper.EmployeeMapper;
 import com.dorm.pojo.Employee;
+import com.dorm.pojo.RoomEmployeeDetails;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	EmployeeMapper employeeMapper;
+	
+	@Autowired
+	RoomEmployeeDetailsService roomEmployeeDetailsService;
 	
 	@Override
 	public Employee getEmployeeByName(String employeeName) {
@@ -160,6 +164,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public List<Employee> getEmployees(Employee employee) {
 		// TODO Auto-generated method stub
 		return employeeMapper.getEmployees(employee);
+	}
+
+	@Override
+	public boolean isLive(String employeeNo) {
+		// TODO Auto-generated method stub
+		List<RoomEmployeeDetails> list = roomEmployeeDetailsService.getLivingByEmployeeNo(employeeNo);
+		if (list.size()==0||list==null) {
+			return false;
+		}else {
+			return true;
+		}
+		
+	}
+
+	@Override
+	public List<Employee> getAllEmployeeDetail() {
+		// TODO Auto-generated method stub
+		List<Employee> list = employeeMapper.getAllEmployeeDetail();
+		return list;
 	}
 
 }

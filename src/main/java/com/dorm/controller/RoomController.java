@@ -28,7 +28,7 @@ public class RoomController {
 	public String getAllRoom(@RequestParam(value="page",defaultValue="1")int pageNum,
 			@RequestParam(value="rows",defaultValue="5")int pageSize) {				
 		PageHelper.startPage(pageNum, pageSize);
-		List<Room> rooms = roomService.getAllRoom();
+		List<Room> rooms = roomService.getAllRoomDetails();
 		PageInfo<Room> p = new PageInfo<>(rooms);
 		long total = p.getTotal();
 		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		

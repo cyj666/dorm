@@ -76,6 +76,9 @@ public class SSOFilter extends AccessControlFilter{
 			return true;
 		}
 		SimpleSession session = (SimpleSession) redisSessonDao.byteToSession(RedisDb.getObject(sid.getBytes()));
+		if (session==null) {
+			return true;
+		}
 		System.out.println(session.getId()+"/"+session.getHost()+"/"+session.getTimeout()+"/"+session.getLastAccessTime());
 		Map<Object, Object> map = session.getAttributes();
 		if (map==null) {

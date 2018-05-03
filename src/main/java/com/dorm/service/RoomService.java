@@ -11,6 +11,7 @@ public interface RoomService {
 	public List<Room> getRoomByFactoryName(String factoryName);	
 	public List<Room> getRooms(Room room);
 	public List<Room> getAllRoom();
+	public List<Room> getAllRoomDetails();
 	
 	
 	public void addRoom(Room room);

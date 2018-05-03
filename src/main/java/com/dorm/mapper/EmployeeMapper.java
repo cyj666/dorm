@@ -9,6 +9,7 @@ public interface EmployeeMapper {
 	public Employee getEmployee(Employee employee);
 	public List<Employee> getEmployees(Employee employee);
 	public List<Employee> getAllEmployee();
+	public List<Employee> getAllEmployeeDetail();
 	public List<Employee> getEmployeeByIdList(List<Integer> employeeIds);
 	public List<Employee> getEmployeeByNameArray(String[] employeeNames);
 	public List<Employee> getEmployeeByNoArray(String[] employeeNo);

@@ -6,13 +6,51 @@
  	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/>--> 
  	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
 
+	<resultMap id="detailMap" type="com.dorm.pojo.RoomEmployeeDetails">
+		<id property="id" column="id" />
+		<result property="employeeNo" column="employee_no" />		
+		<result property="roomNo" column="room_no" />
+		<result property="dateIn" column="date_in" />
+		<result property="dateOut" column="date_out" />
+		<!-- 进行 多表关联插叙，关联房间 -->
+		<association property="room" column="room" javaType="com.dorm.pojo.Room">
+			<id property="roomId" column="room_id" />
+			<result property="factoryName" column="factory_name" />
+			<result property="building" column="building" />
+			<result property="unit" column="unit" />
+			<result property="floor" column="floor" />
+			<result property="type" column="type" />
+			<result property="remark" column="remark" />
+			<result property="roomNo" column="room_no" />
+			<result property="size" column="size" />
+			<result property="roomAdmin" column="roomAdmin" />			
+		</association>
+		<!-- 进行 多表关联插叙，关联员工 -->
+		<association property="employee"  javaType="com.dorm.pojo.Employee">
+		<id property="employeeId" column="employee_id" />
+		<result property="employeeName" column="employee_name" />
+		<result property="employeeSex" column="employee_sex" />
+		<result property="employeeJob" column="employee_job" />
+		<result property="employeeWorkplace" column="employee_workplace" />
+		<result property="employeeFamily" column="employee_family" />
+		<result property="employeeRemark" column="employee_remark" />
+		<result property="employeeNo" column="employee_no" />
+		</association>
+	</resultMap>
+
+
     <!--  ================================= -->
-    <select id="getAllDetails" resultType="RoomEmployeeDetails" >
-   	SELECT * FROM employees e INNER JOIN employees_rooms er ON e.employee_no = er.employee_no
-	INNER JOIN rooms r ON er.room_no = r.room_no 
+    <select id="getAllDetails" resultMap="detailMap" >
+   	SELECT * FROM employees e right JOIN employees_rooms er ON e.employee_no = er.employee_no
+	left JOIN rooms r ON er.room_no = r.room_no 
     </select>
     
-    <select id="getAllDetailsNow" resultType="RoomEmployeeDetails" >
+    <select id="getAllHistoryDetails" resultMap="detailMap" >
+   	SELECT * FROM employees e right JOIN employees_rooms_history er ON e.employee_no = er.employee_no
+	left JOIN rooms r ON er.room_no = r.room_no 
+    </select>
+    
+    <select id="getAllDetailsNow" resultMap="detailMap">
    	SELECT * FROM employees e INNER JOIN employees_rooms er ON e.employee_no = er.employee_no
 	INNER JOIN rooms r ON er.room_no = r.room_no where er.date_out IS NULL
     </select>
@@ -30,7 +68,28 @@
     </select>
     
     <!-- 得到具体细节 -->
-     <select id="getDetails" resultType="RoomEmployeeDetails" parameterType="roomEmployeeDetails">
+     <select id="getDetails" resultMap="detailMap" parameterType="roomEmployeeDetails">
+   SELECT * FROM employees e RIGHT JOIN employees_rooms er ON e.employee_no = er.employee_no
+	LEFT JOIN rooms r ON er.room_no = r.room_no
+	<where>
+		<if test="roomNo != null and roomNo !='' ">
+       	and r.room_no = #{roomNo}
+       	</if>
+       	<if test="employeeNo != null and employeeNo !='' ">
+       	and er.employee_no = #{employeeNo}
+       	</if>
+       <if test='dateIn != null and dateIn !="" '>
+       	and er.date_in = #{dateIn}
+       	</if>     
+       	<if test='dateOut != null and dateOut !="" '>
+       	and er.date_out = #{dateOut}
+       	</if>
+       		
+	</where>
+    </select>
+    
+    <!-- 得到具体细节,不包含历史记录 -->
+     <select id="getDetailsNow" resultType="RoomEmployeeDetails" parameterType="roomEmployeeDetails">
    SELECT * FROM employees e INNER JOIN employees_rooms er ON e.employee_no = er.employee_no
 	INNER JOIN rooms r ON er.room_no = r.room_no
 	<where>
@@ -40,16 +99,25 @@
        	<if test="employeeNo != null and employeeNo !='' ">
        	and er.employee_no = #{employeeNo}
        	</if>
-       	<if test="dateOut == null or dateOut =='' ">
-       	and er.date_out IS NULL
-       	</if>	
-       		
+       <if test='dateIn != null and dateIn !="" '>
+       	and er.date_in = #{dateIn}
+       	</if>     
+       	<if test='dateOut != null and dateOut !="" '>
+       	and er.date_out = #{dateOut}
+       	</if>
+       	and er.date_out is NULL	
 	</where>
     </select>
     
     <insert id="addDetails" useGeneratedKeys="true" keyProperty="id" parameterType="roomEmployeeDetails">
     	insert into
 		employees_rooms(employee_no,room_no,date_in,date_out)
+		values(#{employeeNo},#{roomNo},#{dateIn},#{dateOut})
+    </insert>
+    
+     <insert id="addHistoryDetails" useGeneratedKeys="true" keyProperty="id" parameterType="roomEmployeeDetails">
+    	insert into
+		employees_rooms_history(employee_no,room_no,date_in,date_out)
 		values(#{employeeNo},#{roomNo},#{dateIn},#{dateOut})
     </insert>
     
@@ -64,6 +132,27 @@
    
    <delete id="deleteDetails" parameterType="roomEmployeeDetails">
         delete from employees_rooms
+		<where>
+        <if test="id != null and id !='' ">
+       	and id = #{id}
+        </if> 
+        <if test="roomNo != null and roomNo !='' ">
+       	and room_no = #{roomNo}
+        </if>
+        <if test="employeeNo != null and employeeNo !='' ">
+       	and employee_no = #{employeeNo}
+        </if>
+        <if test="dateIn != null and dateIn !='' ">
+       	and date_in = #{dateIn}
+        </if>
+       <!--  <if test="dateOut != null and dateOut !='' ">
+       	and date_out = #{dateOut}
+        </if>-->
+        </where>
+    </delete>
+    
+      <delete id="deleteHistoryDetails" parameterType="roomEmployeeDetails">
+        delete from employees_rooms_history
 		<where>
         <if test="id != null and id !='' ">
        	and id = #{id}

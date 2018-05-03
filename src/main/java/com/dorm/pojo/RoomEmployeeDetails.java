@@ -13,7 +13,9 @@ public class RoomEmployeeDetails implements Serializable {
 	private static final long serialVersionUID = -1306454217524872279L;
 	private Integer id;
 	private String roomNo;
+	private Employee employee;
 	private String employeeNo;
+	private Room Room;
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date dateIn;
 	@DateTimeFormat(pattern="yyyy-MM-dd")
@@ -48,10 +50,22 @@ public class RoomEmployeeDetails implements Serializable {
 	public void setDateOut(Date dateOut) {
 		this.dateOut = dateOut;
 	}
+	public Employee getEmployee() {
+		return employee;
+	}
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
+	public Room getRoom() {
+		return Room;
+	}
+	public void setRoom(Room room) {
+		Room = room;
+	}
 	@Override
 	public String toString() {
-		return "RoomEmployeeDetails [id=" + id + ", roomNo=" + roomNo + ", employeeNo=" + employeeNo + ", dateIn="
-				+ dateIn + ", dateOut=" + dateOut + "]";
+		return "RoomEmployeeDetails [id=" + id + ", roomNo=" + roomNo + ", employee=" + employee + ", employeeNo="
+				+ employeeNo + ", Room=" + Room + ", dateIn=" + dateIn + ", dateOut=" + dateOut + "]";
 	}
 	
 	

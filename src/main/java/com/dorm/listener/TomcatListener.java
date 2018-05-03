@@ -4,7 +4,11 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
-
+/**
+ * 在web.xml中注册
+ * @author DELL
+ *容器监听器，以后扩展用。
+ */
 public class TomcatListener implements ServletContextListener {
 
 	private static final Logger log = Logger.getLogger(TomcatListener.class);

@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -57,13 +58,13 @@ public class BaseController {
 	@Autowired
 	RoomEmployeeDetailsService roomEmployeeDetailsService;
 	
-	@RequestMapping("/test")
+	/*测试代码*/
+	/*@RequestMapping("/test")
 	@ResponseBody
 	public String test() {
 		return "hello world"; 
-	}
+	}*/
 	
-
 	
 	
 	/**
@@ -76,7 +77,8 @@ public class BaseController {
 	}
 	
 	
-	@RequestMapping(value="/getDetils",produces="application/json;charset=utf-8")
+	/*测试代码*/
+	/*@RequestMapping(value="/getDetils",produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getDetils() {
 		RoomEmployeeDetails details = new RoomEmployeeDetails();
@@ -90,7 +92,8 @@ public class BaseController {
 		
 		return list.toString();
 		
-	}
+	}*/
+	
 	
 	@RequestMapping("/{active}")
 	public String getUrl(@PathVariable String active) {
@@ -103,12 +106,13 @@ public class BaseController {
 		return "/system/main";
 	}
 	
-	//@RequiresRoles("qw")
+	/*自定义跳转方式*/
 	@RequestMapping(value="BaseController.do",method=RequestMethod.GET)
 	public String getUrl4(@RequestParam(value="url")String url) {
 		
 		return "/system/"+url;
 	}
+	
 	
 	 @ExceptionHandler({UnauthenticatedException.class})
 	 @ResponseStatus(value=HttpStatus.FORBIDDEN,reason="账号未登录,请先登录")
@@ -135,6 +139,7 @@ public class BaseController {
 	    return mv;
 	    }
 	 
+	 
 	@RequiresUser
 	@RequestMapping(value="buss",method=RequestMethod.GET)
 	public String getUrl5(@RequestParam(value="url")String url) {
@@ -146,33 +151,38 @@ public class BaseController {
 	public String getUrl6() {		
 		return "/system/login";
 	}
-			
 	
-	@RequestMapping("401") 
-	public String getUrl9() {
-		return "error/401";
+	@RequestMapping(value="/",method=RequestMethod.GET)
+	public String getUrl11() {	
+		if (SecurityUtils.getSubject().getPrincipal()==null) {
+			return "/system/login";
+		}
+		return "/system/main";
 	}
+				
 	
+	/*测试SpringMVC异步处理，用于优化系统响应速度 */
 	@RequestMapping(value="18",produces="text/html;charset=utf-8")
 	@ResponseBody
-	public Callable<String> getUrl18(@CookieValue(value="JSESSIONID")String id) {
-		System.out.println(id);		
+	public Callable<String> getUrl18(@CookieValue(value="JSESSIONID") final String id) {
+		final List<Room> rooms = roomService.getAllRoomDetails();	
 		return new Callable<String>() {
 
 			@Override
 			public String call() throws Exception {
 				// TODO Auto-generated method stub
 				Thread.sleep(2000);
-				return "OK";
+				return rooms.toString();
 			}
 		};
 	}
 	
+	/*测试SpringMVC异步处理， 用于优化系统响应速度 */
 	/**
 	 * 自定义超时时间
 	 * @return
 	 */
-	@RequestMapping(value="19",produces="text/html;charset=utf-8")
+	/*@RequestMapping(value="19",produces="text/html;charset=utf-8")
 	@ResponseBody
 	public WebAsyncTask<String> getUrl19() {
 		Callable<String> callable = new Callable<String>() {
@@ -185,19 +195,8 @@ public class BaseController {
 			}
 		};
 		return new WebAsyncTask<>(5000, callable);
-	}
+	}*/
 	
-	
-	
-	@RequestMapping("403")
-	public String getUrl10() {
-		return "error/403";
-	}
-	
-	
-	@RequestMapping("500")
-	public String getUrl11() {
-		return "error/500";
-	}
+
 	
 }

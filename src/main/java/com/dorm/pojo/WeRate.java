@@ -1,11 +1,20 @@
 package com.dorm.pojo;
 
-//水电费实体类
-public class werate {
+import java.io.Serializable;
 
+//水电费实体类
+public class WeRate implements Serializable {
+
+	private Integer id;
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	private String date;//某年某月
 	private Double rate;//这月水电费
-	private Integer roomNo;//房间号
+	private String roomNo;//房间号
 	public String getDate() {
 		return date;
 	}
@@ -18,10 +27,10 @@ public class werate {
 	public void setRate(Double rate) {
 		this.rate = rate;
 	}
-	public Integer getRoomNo() {
+	public String getRoomNo() {
 		return roomNo;
 	}
-	public void setRoomNo(Integer roomNo) {
+	public void setRoomNo(String roomNo) {
 		this.roomNo = roomNo;
 	}
 	@Override

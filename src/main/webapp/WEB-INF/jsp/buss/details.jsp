@@ -13,6 +13,7 @@
 			<tr>
 				<th data-options="field:'ck',checkbox:true"></th>
 				<th data-options="field:'id',width:30">系统ID</th>
+				<th data-options="field:'employee',width:80" formatter="manageEmployee">员工姓名</th>
 				<th data-options="field:'employeeNo',width:80">员工工号</th>
 				<th data-options="field:'roomNo',width:80">房间</th>
 				<th data-options="field:'dateIn',width:80">入住时间</th>
@@ -24,13 +25,14 @@
 	<div id="toolbar">
 		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="create()" plain="true">入住登记</a> 
 		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="edit()" plain="true">调换宿舍</a> 
-		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="remove()" plain="true">搬离宿舍</a>
+		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="remove1()" plain="true">搬离宿舍</a>
 		<a href="#" class="easyui-linkbutton remove" iconCls="icon-cancel" onclick="del()" plain="true">删除记录	</a>
 		<div>
 			员工工号: <input class="easyui-textbox" id="employeeNo">
 			房间号: <input class="easyui-textbox" id="roomNo">
 			入住时间:<input class="easyui-datebox" id="dateIn" data-options="formatter:myformatter,parser:myparser">
 			搬离时间:<input class="easyui-datebox" id="dateOut" data-options="formatter:myformatter,parser:myparser">
+			<!--  是否查看所有<input type="checkbox" id="ck1" name="ck1" value="1"  />-->
 			<a href="#" class="easyui-linkbutton" onclick="detailsSearch()" iconCls="icon-search">查找记录</a>
 			<a href="#" class="easyui-linkbutton" onclick="detailsReset()" iconCls="icon-cancel">清空</a>
 		</div>
@@ -53,7 +55,7 @@
 	    		</tr>	   
 	    		<tr>
 	    			<td>目标宿舍</td>
-	    			<td><input class="easyui-textbox" readonly="readonly" id="roomNo2" editable="true" maxlength="20" type="text" name="roomNo" required="true"  missingMessage="房间号必须填写"></input>
+	    			<td><input class="easyui-textbox" readonly="readonly" id="roomNo2" editable="true" maxlength="20" type="text" name="roomNo" required="false"  missingMessage="房间号必须填写"></input>
 	    			<a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="openRoomWin('dlgRoom','宿舍')" >选择</a>
 	    			<a href="#" class="easyui-linkbutton" iconCls="icon-redo" onclick="clearText('classid','classname');" >清空</a></td>
 	    		</tr>
@@ -70,6 +72,8 @@
 	</div>
 	
 	
+	
+	
 	<div id="dlg-buttons">
 		<a href="#" class="easyui-linkbutton  save" onclick="save()" iconCls="icon-ok">保存</a> 
 		<a href="#" class="easyui-linkbutton cancel" onclick="javascript:$('#dlg').dialog('close')" iconCls="icon-cancel">取消</a>
@@ -84,11 +88,13 @@
 			<a href="#" class="easyui-linkbutton" onclick="dormReset()" iconCls="icon-redo">重置</a>
 		</div>
 	</div>
-	<div id="dlgRoom" class="easyui-dialog" title="数据" style="width: 350px; height: 450px; top: 80px;" data-options="modal:true" closed="true" buttons="#dlgRoom-buttons">
+	<div id="dlgRoom" class="easyui-dialog" title="数据" style="width: 650px; height: 550px; top: 80px;" data-options="modal:true" closed="true" buttons="#dlgRoom-buttons">
 		<table id="dgRoom" class="easyui-datagrid"  cellpadding="0" cellspacing="0" style="width:100%">
 			<thead>
 				<tr>
 					<th data-options="field:'factoryName',width:80">分厂</th>
+					<th data-options="field:'building',width:80">楼栋号</th>
+					<th data-options="field:'unit',width:80">单元号</th>
 					<th data-options="field:'roomNo',width:80">宿舍</th>
 					<th data-options="field:'roomAdmin',width:80">宿管</th>
 					<th data-options="field:'size',width:80">总床位数</th>
@@ -103,12 +109,14 @@
 	</div>
 	
 	<!-- 员工界面 -->
-	<div id="dlgEmployee" class="easyui-dialog" title="数据" style="width: 350px; height: 450px; top: 80px;" data-options="modal:true" closed="true" buttons="#dlgEmployee-buttons">
+	<div id="dlgEmployee" class="easyui-dialog" title="数据" style="width: 650px; height: 550px; top: 80px;" data-options="modal:true" closed="true" buttons="#dlgEmployee-buttons">
 		<table id="dgEmployee" class="easyui-datagrid"  cellpadding="0" cellspacing="0" style="width:100%">
 			<thead>
 				<tr>
-					<th data-options="field:'employeeName'" style="width: 60%;">姓名</th>
-					<th data-options="field:'employeeNo'" style="width: 40%;">工号</th>
+					<th data-options="field:'employeeName'" style="width: 60;">姓名</th>
+					<th data-options="field:'employeeJob'" style="width: 60;">职位</th>
+					<th data-options="field:'employeeWorkplace'" style="width: 60;">职位</th>
+					<th data-options="field:'employeeNo'" style="width: 40;">工号</th>
 				</tr>
 			</thead>
 		</table>
@@ -140,7 +148,8 @@
 		loadRoomGrid();
 	}
 	function detailsSearch(){
-		var queryCondition = {'roomNo':$('#roomNo').val(),'employeeNo': $('#employeeNo').val(),'dateIn': $('#dateIn').val(),'dateOut': $('#dateOut').val()};
+		var is = $("input[type='checkbox']").prop('checked'); 
+		var queryCondition = {'roomNo':$('#roomNo').val(),'employeeNo': $('#employeeNo').val(),'dateIn': $('#dateIn').val(),'dateOut': $('#dateOut').val(),'isAll':is};
 		loadDataGridByQ(queryCondition);
 	}
 	function detailsReset(){
@@ -371,14 +380,21 @@
 			$('#fm').form('clear');
 			url = 'updateDetails';
 		}
-		function remove(){
-			$('#dlg').dialog('open').dialog('setTitle','搬离宿舍');
-			$('#fm').form('clear');
-			
-			url = 'leaveRoom';
+		function remove1(){	
+				var row = $('#dg').datagrid('getSelections');
+				if (row.length == 1){
+					$('#dlg').dialog('open').dialog('setTitle','搬离宿舍(无需填写目标宿舍，可随便填写)');
+					$('#fm').form('clear');
+					$('#fm').form('load',row[0]);
+					url = 'leaveRoom';
+				}else{
+					$.messager.show({
+						title: '提示信息',
+						msg: '请选择一行数据再进行编辑！'
+					});
+				}
 		}
 		function save(){
-			alert(url);
 			$('#fm').form('submit',{
 				url: url,
 				onSubmit: function(){
@@ -459,6 +475,22 @@
 				return new Date(y,m-1,d);
 			} else {
 				return new Date();
+			}
+		}
+	function manageRoom(value, row, index) {
+			if (value != null) {
+				var arr =  value.roomNo;
+				return arr;
+			} else {
+				return "无";
+			}
+		}
+	function manageEmployee(value, row, index) {
+			if (value != null) {
+				var arr =  value.employeeName;
+				return arr;
+			} else {
+				return "无";
 			}
 		}
 	</script>
