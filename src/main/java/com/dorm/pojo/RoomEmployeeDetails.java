@@ -13,6 +13,8 @@ public class RoomEmployeeDetails implements Serializable {
 	private static final long serialVersionUID = -1306454217524872279L;
 	private Integer id;
 	private String roomNo;
+	private Integer roomId;
+	private Integer employeeId;
 	private Employee employee;
 	private String employeeNo;
 	private Room Room;
@@ -62,10 +64,23 @@ public class RoomEmployeeDetails implements Serializable {
 	public void setRoom(Room room) {
 		Room = room;
 	}
+	
+	public Integer getRoomId() {
+		return roomId;
+	}
+	public void setRoomId(Integer roomId) {
+		this.roomId = roomId;
+	}
 	@Override
 	public String toString() {
 		return "RoomEmployeeDetails [id=" + id + ", roomNo=" + roomNo + ", employee=" + employee + ", employeeNo="
 				+ employeeNo + ", Room=" + Room + ", dateIn=" + dateIn + ", dateOut=" + dateOut + "]";
+	}
+	public Integer getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(Integer employeeId) {
+		this.employeeId = employeeId;
 	}
 	
 	

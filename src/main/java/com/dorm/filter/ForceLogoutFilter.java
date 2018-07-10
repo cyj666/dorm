@@ -12,6 +12,11 @@ import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
 
 
+/**
+ * 管理员强制登出过滤器
+ * @author DELL
+ *
+ */
 public class ForceLogoutFilter extends AccessControlFilter {
 	
 	

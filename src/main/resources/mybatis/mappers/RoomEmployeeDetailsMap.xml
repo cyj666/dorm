@@ -10,6 +10,7 @@
 		<id property="id" column="id" />
 		<result property="employeeNo" column="employee_no" />		
 		<result property="roomNo" column="room_no" />
+		<result property="roomId" column="room_id" />
 		<result property="dateIn" column="date_in" />
 		<result property="dateOut" column="date_out" />
 		<!-- 进行 多表关联插叙，关联房间 -->
@@ -111,8 +112,8 @@
     
     <insert id="addDetails" useGeneratedKeys="true" keyProperty="id" parameterType="roomEmployeeDetails">
     	insert into
-		employees_rooms(employee_no,room_no,date_in,date_out)
-		values(#{employeeNo},#{roomNo},#{dateIn},#{dateOut})
+		employees_rooms(employee_no,room_no,date_in,date_out,room_id,employee_id)
+		values(#{employeeNo},#{roomNo},#{dateIn},#{dateOut},#{roomId},#{employeeId})
     </insert>
     
      <insert id="addHistoryDetails" useGeneratedKeys="true" keyProperty="id" parameterType="roomEmployeeDetails">
@@ -145,6 +146,12 @@
         <if test="dateIn != null and dateIn !='' ">
        	and date_in = #{dateIn}
         </if>
+        <if test="roomId != null and roomId !='' ">
+       	and room_id = #{roomId}
+        </if>
+        <if test="employeeId != null and employeeId !='' ">
+       	and employee_id = #{employeeId}
+        </if>
        <!--  <if test="dateOut != null and dateOut !='' ">
        	and date_out = #{dateOut}
         </if>-->
@@ -169,6 +176,12 @@
         <if test="dateOut != null and dateOut !='' ">
        	and date_out = #{dateOut}
         </if>
+        <if test="roomId != null and roomId !='' ">
+       	and room_id = #{roomId}
+        </if>
+        <if test="employeeId != null and employeeId !='' ">
+       	and employee_id = #{employeeId}
+        </if>
         </where>
     </delete>
     
@@ -187,6 +200,12 @@
         </if>
         <if test="dateOut != null and dateOut !='' ">
        date_out = #{dateOut},
+        </if>
+        <if test="roomId != null and roomId !='' ">
+       	and room_id = #{roomId}
+        </if>
+        <if test="employeeId != null and employeeId !='' ">
+       	and employee_id = #{employeeId}
         </if>
     </set>
     <where>

@@ -6,8 +6,8 @@
 	<settings>
 		<!-- 开启驼峰映射 -->
 		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
-		<!-- 二级缓存总开开关 -->
-		<setting name="cacheEnabled" value="true"></setting>
+		<!-- 二级缓存总开开关   此项目暂且关闭二级缓存--><!--   或是在相应的map.xml文件的中使用useCache="false" -->
+		<setting name="cacheEnabled" value="false"></setting>
 		<!-- 查询时，关闭关联对象即时加载以提高性能 -->
         <setting name="lazyLoadingEnabled" value="false"/>
 

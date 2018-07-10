@@ -77,9 +77,11 @@
 	<bean id="sessionIdGenerator"
 		class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator" />
 
-	<!-- 会话DAO，sessionManager里面的session需要保存在会话Dao里，没有会话Dao，session是瞬时的，没法从 sessionManager里面拿到session 
-		org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO -->
-	<bean id="sessionDAO" class="com.dorm.sessionDao.RedisSessionDao">
+	<!-- 会话DAO，sessionManager里面的session需要保存在会话Dao里，没有会话Dao，session是瞬时的，没法从 sessionManager里面拿到session，
+	开关，目前实现方式有两种：
+	1、shiro自带的EnterpriseCacheSessionDAO(org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO)，只要实例化就好了；
+	2、自己编写的RedisSessionDao，实例化就好了(com.dorm.sessionDao.RedisSessionDao)；-->
+	<bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO ">
 		<property name="activeSessionsCacheName" value="shiro-activeSessionCache" />
 		<property name="sessionIdGenerator" ref="sessionIdGenerator" />
 	</bean>
@@ -138,7 +140,9 @@
 	</bean>
 
 	<bean id="forceLogoutFilter" class="com.dorm.filter.ForceLogoutFilter"></bean>
-	<bean id="ssoFilter" class="com.dorm.filter.SSOFilter"></bean>
+	
+	<!-- redis实现的共享session过滤器，如果要用取消下面注释 -->
+	<!-- <bean id="ssoFilter" class="com.dorm.filter.SSOFilter"></bean>-->
 
 	<!-- Shiro主过滤器本身功能十分强大，其强大之处就在于它支持任何基于URL路径表达式的、自定义的过滤器的执行 Web应用中，Shiro可控制的Web请求必须经过Shiro主过滤器的拦截，Shiro对基于Spring的Web应用提供了完美的支持 -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
@@ -154,16 +158,17 @@
 			<map>
 				<entry key="kickout" value-ref="kickoutSessionControlFilter" />
 				<entry key="force" value-ref="forceLogoutFilter"></entry>
-				<entry key="sso" value-ref="ssoFilter"></entry>
+				<!-- 注意开启时，下面的/login=sso,anon 和/**=sso,kickout,force
+				<entry key="sso" value-ref="ssoFilter"></entry> -->
 			</map>
 		</property>
 		<property name="filterChainDefinitions">
 			<value>
-				/login=sso,anon
+				/login=anon
 				/captchaCode=anon
 				/main=user
 				/room=user
-				/**=sso,kickout,force
+				/**=kickout,force
 			</value>
 		</property>
 	</bean>

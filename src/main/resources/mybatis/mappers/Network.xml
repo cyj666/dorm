@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.mapper.NetworkMapper">
+	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/> -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+
+	
+	<resultMap id="networkMap" type="com.dorm.pojo.Network">  
+    <id property="id" column="id"/>  
+    <result property="mac" column="mac"/>  
+    <result property="ip" column="ip"/>  
+    <result property="start" column="start"/>  
+    <result property="end" column="end"/> 
+    <result property="continued" column="continued"/> 
+   <!-- 进行 多表关联插叙，关联员工 -->
+	<association property="employee"  javaType="com.dorm.pojo.Employee">
+		<id property="employeeId" column="employee_id" />
+		<result property="employeeName" column="employee_name" />
+		<result property="employeeSex" column="employee_sex" />
+		<result property="employeeJob" column="employee_job" />
+		<result property="employeeWorkplace" column="employee_workplace" />
+		<result property="employeeFamily" column="employee_family" />
+		<result property="employeeRemark" column="employee_remark" />
+		<result property="employeeNo" column="employee_no" />
+	</association>
+      
+    </resultMap> 
+
+
+	<select id="getNetwork" resultType="Network" parameterType="Network">
+		select * from network
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+			<if test="mac != null and mac !='' ">
+				and mac = #{mac}
+			</if>
+			<if test="ip != null and ip !='' ">
+				and ip = #{ip}
+			</if>				
+			<if test="start != null and start !='' ">
+				and `start` = #{start}
+			</if>
+			<if test="end != null and end !='' ">
+				and end = #{end}
+			</if>
+			<if test="continued != null and continued !='' ">
+				and continued = #{continued}
+			</if>			
+		</where>
+	</select>
+
+	<select id="getELN" resultMap="networkMap" parameterType="Network">
+		select * from network n LEFT JOIN employee_network en ON n.id = en.network_id
+		LEFT JOIN employees e ON e.employee_id = en.employee_id
+		<where>	
+			<if test="id != null and id !='' ">
+				and n.id = #{id}
+			</if>		
+			<if test="mac != null and mac !='' ">
+				and n.mac = #{mac}
+			</if>
+			<if test="ip != null and ip !='' ">
+				and n.ip = #{ip}
+			</if>				
+			<if test="start != null and start !='' ">
+				and n.`start` = #{start}
+			</if>
+			<if test="end != null and end !='' ">
+				and n.end = #{end}
+			</if>
+			<if test="continued != null and continued !='' ">
+				and n.continued = #{continued}
+			</if>
+			<if test="employee != null and employee !='' ">
+				and e.employee_name = #{employee.employeeName}
+			</if>			
+		</where>
+	</select>
+	
+		
+	<select id="getELNByEmployeeName" resultMap="networkMap" parameterType="String">
+		select * from network n LEFT JOIN employee_network en ON n.id = en.network_id
+		LEFT JOIN employees e ON e.employee_id = en.employee_id
+		<where>						
+			e.employee_name = #{employeName}						
+		</where>
+	</select>
+	
+	<select id="getL" resultType="int" parameterType="Network">
+		select en.id from network n LEFT JOIN employee_network en ON n.id = en.network_id
+		LEFT JOIN employees e ON e.employee_id = en.employee_id
+		<where>	
+			<if test="id != null and id !='' ">
+				and n.id = #{id}
+			</if>					
+			<!-- <if test="mac != null and mac !='' ">
+				and n.mac = #{mac}
+			</if>
+			<if test="ip != null and ip !='' ">
+				and n.ip = #{ip}
+			</if>	-->			
+			<!--  <if test="start != null and start !='' ">
+				and n.`start` = #{start}
+			</if>
+			<if test="end != null and end !='' ">
+				and n.end = #{end}
+			</if>-->
+			<!--<if test="continued != null and continued !='' ">
+				and n.continued = #{continued}
+			</if>
+			<if test="employee != null and employee !='' ">
+				and e.employee_name = #{employee.employeeName}
+			</if>-->							
+		</where>
+	</select>
+	
+	<select id="getELNByEmployeeNo" resultMap="networkMap" parameterType="String">
+		select * from network n LEFT JOIN employee_network en ON n.id = en.network_id
+		LEFT JOIN employees e ON e.employee_id = en.employee_id
+		<where>						
+			 e.employee_no = #{employeeNo}			
+		</where>
+	</select>
+	
+
+	<insert id="addNetwork" useGeneratedKeys="true" keyProperty="id"
+		parameterType="Network">
+		insert into
+		network(mac,ip,`start`,end,continued)
+		values(#{mac},#{ip},#{start},#{end},#{continued})
+	</insert>
+	
+	<insert id="addELN" useGeneratedKeys="true" 
+		parameterType="int">
+		insert into
+		employee_network(employee_id,network_id)
+		values(#{employeeId},#{networkId})
+	</insert>
+
+
+	<delete id="deleteNetwork" parameterType="Network">
+		delete from network
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+			<if test="mac != null and mac !='' ">
+				and mac = #{mac}
+			</if>
+			<if test="ip != null and ip !='' ">
+				and ip = #{ip}
+			</if>
+		</where>
+	</delete>
+	
+	<delete id="deleteELN" parameterType="int">
+		delete from employee_network
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+			<if test="employeeId != null and employeeId !='' ">
+				and employee_id = #{employeeId}
+			</if>
+			<if test="networkId != null and networkId !='' ">
+				and network_id = #{networkId}
+			</if>
+		</where>
+	</delete>
+
+
+	<update id="updateNetwork" parameterType="Network">
+		update network
+		<set>			
+			<if test="mac != null and mac !='' ">
+				mac = #{mac},
+			</if>
+			<if test="ip != null and ip !='' ">
+				ip = #{ip},
+			</if>
+			<if test="start != null and start !='' ">
+				`start` = #{start},
+			</if>
+			<if test="end != null and end !='' ">
+				end = #{end},
+			</if>
+			<if test="continued != null and continued !='' ">
+				continued = #{continued},
+			</if>					
+		</set>
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</update>
+
+
+<update id="updateELN" parameterType="int">
+		update employee_network
+		<set>			
+			<if test="employeeId != null and employeeId !='' ">
+				employee_id = #{employeeId},
+			</if>
+			<if test="networkId != null and networkId !='' ">
+				network_id = #{networkId},
+			</if>				
+		</set>
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</update>
+
+	
+</mapper>

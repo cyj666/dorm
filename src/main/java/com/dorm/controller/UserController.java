@@ -304,6 +304,12 @@ public class UserController {
 		return result;    
 	    }
 	
+	/**
+	 * 强制退出设置属性的一步
+	 * @param sessionId
+	 * @param redirectAttributes
+	 * @return
+	 */
 	@RequestMapping("/{sessionId}/forceLogout") 
 	@ResponseBody
     public String forceLogout(@PathVariable("sessionId") String sessionId,   
@@ -340,7 +346,13 @@ public class UserController {
 		return sid+":"+sessionDAO.toString()+":"+session.toString();
 	}
 	
-	
+	/**
+	 * 判断在线人数
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value="getSessionList",method=RequestMethod.GET,produces="text/html;charset=utf-8")
 	public String getSessionList(HttpServletRequest request,HttpServletResponse response,Model model) {
 		Collection<Session> sessions = sessionDAO.getActiveSessions();//取出来的集合中除了session，还有linkedList,直接遍历会报异常
@@ -355,7 +367,7 @@ public class UserController {
 				} catch (Exception e) {
 					session=null;
 				}
-				if (session!=null&&session.getAttribute("org.apache.shiro.subject.support.DefaultSubjectContext_AUTHENTICATED_SESSION_KEY")!=null) {
+				if (session!=null&&session.getAttribute("org.apache.shiro.subject.support.DefaultSubjectContext_AUTHENTICATED_SESSION_KEY")!=null) {//根据该属性判断是否在线
 					list.add(session);
 				}
 			}

@@ -22,4 +22,17 @@ public interface RoomService {
 	
 	public void updateRoom(Room room);
 	public void updateRoomByList(List<Room> rooms);
+	
+	
+	
+	public List<String> getFactory(); //查询分厂的种类
+	
+	public List<String> getBuilding(String factory); //查询楼栋的种类
+	
+	public List<String> getUnit(String factory,String building); //查询单元
+	
+	public List<String> getFloor(String factory,String building,String unit);
+	
+	public List<Room> getRoomDetails(Room room);
+	
 }

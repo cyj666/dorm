@@ -3,6 +3,7 @@ package com.dorm.service;
 import java.util.List;
 
 import com.dorm.pojo.Employee;
+import com.dorm.pojo.Room;
 
 public interface EmployeeService {
 
@@ -17,6 +18,12 @@ public interface EmployeeService {
 	public List<Employee> getEmployees(Employee employee); 
 	public List<Employee> getAllEmployee();
 	public List<Employee> getAllEmployeeDetail();
+	public List<Employee> getAllEmployeeDetail2(); //比起getAllEmployeeDetail方法多一个条件，只查询出未入住的人员，下同理
+	public List<Employee> getEmployeesDetail(Employee employee);
+	public List<Employee> getEmployeesDetail2(Employee employee);
+	public List<Employee> getEmployeeByRoom(Room room);  //根据房间的属性查询员工信息
+	
+	
 	
 	public List<Employee> getEmployeeByIdList(List<Integer> employeeIds);//批量查询ID
 	public List<Employee> getEmployeeByNameArray(String[] employeeNames);//批量查询姓名

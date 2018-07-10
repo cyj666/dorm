@@ -35,8 +35,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dorm.pojo.Employee;
+import com.dorm.pojo.Room;
+import com.dorm.pojo.RoomEmployeeDetails;
 import com.dorm.pojo.User;
 import com.dorm.service.EmployeeService;
+import com.dorm.service.RoomEmployeeDetailsService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLDataException;
@@ -51,6 +54,10 @@ public class EmployeeController {
 	@Lazy //延迟加载，为了使@RequiresPermissions注解生效
 	EmployeeService employeeService;
 
+	@Autowired
+	@Lazy
+	RoomEmployeeDetailsService roomEmployeeDetailsService;
+	
 	
 	@RequiresUser
 	//@RequiresRoles(value={"admin"})
@@ -61,6 +68,22 @@ public class EmployeeController {
 			@RequestParam(value="rows",defaultValue="5")int pageSize) {		
 		PageHelper.startPage(pageNum, pageSize);
 		List<Employee> list = employeeService.getAllEmployeeDetail();
+		PageInfo<Employee> p = new PageInfo<>(list);
+		long total = p.getTotal();
+		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
+		String JSON = "{\"total\":"+total+",\"rows\":"+json+"}";		
+		return JSON;
+	}
+	
+	@RequiresUser
+	//@RequiresRoles(value={"admin"})
+	@RequiresPermissions(value= {"get:employee"})
+	@RequestMapping(value="getAllEmployee2",method=RequestMethod.GET,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getAllEmployee2(@RequestParam(value="page",defaultValue="1")int pageNum,
+			@RequestParam(value="rows",defaultValue="5")int pageSize) {		
+		PageHelper.startPage(pageNum, pageSize);
+		List<Employee> list = employeeService.getAllEmployeeDetail2();
 		PageInfo<Employee> p = new PageInfo<>(list);
 		long total = p.getTotal();
 		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
@@ -103,7 +126,8 @@ public class EmployeeController {
 		employee.setEmployeeJob(employeeJob);
 		employee.setEmployeeWorkplace(employeeWorkplace);
 		PageHelper.startPage(pageNum, pageSize);
-		List<Employee> employees = employeeService.getEmployees(employee);
+		//List<Employee> employees = employeeService.getEmployees(employee);
+		List<Employee> employees = employeeService.getEmployeesDetail(employee);
 		PageInfo<Employee> p = new PageInfo<>(employees);
 		long total = p.getTotal();
 		for (Employee e : p.getList()) {
@@ -116,20 +140,66 @@ public class EmployeeController {
 	}
 	
 	
+	 
+		@RequiresUser
+		//@RequiresRoles(value={"admin"})
+		@RequiresPermissions(value= {"get:employee"})
+		@RequestMapping(value="/getEmployee2",produces="application/json;charset=utf-8")
+		@ResponseBody
+		public String getEmployee2(@RequestParam(value="employeeName",required=false)String employeeName,
+				@RequestParam(value="employeeNo",required=false)String employeeNo,			
+				@RequestParam(value="employeeJob",required=false)String employeeJob,
+				@RequestParam(value="employeeWorkplace",required=false)String employeeWorkplace,
+				@RequestParam(value="page",defaultValue="1")int pageNum,
+				@RequestParam(value="rows",defaultValue="5")int pageSize) {
+			//List<Employee> employees = new ArrayList<>();
+			Employee employee = new Employee();
+			employee.setEmployeeName(employeeName);
+			employee.setEmployeeNo(employeeNo);
+			employee.setEmployeeJob(employeeJob);
+			employee.setEmployeeWorkplace(employeeWorkplace);
+			PageHelper.startPage(pageNum, pageSize);
+			//List<Employee> employees = employeeService.getEmployees(employee);
+			List<Employee> employees = employeeService.getEmployeesDetail2(employee);
+			PageInfo<Employee> p = new PageInfo<>(employees);
+			long total = p.getTotal();
+			for (Employee e : p.getList()) {
+				
+			}
+			String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
+			String JSON = "{\"total\":"+total+",\"rows\":"+json+"}";
+			return JSON;
+			
+		}
+		
+	
 	@RequiresUser
 	//@RequiresRoles(value={"admin"})
 	@RequiresPermissions(value= {"delete:employee"})
 	@RequestMapping(value="/deleteEmployee",method=RequestMethod.POST,produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String deleteEmployee(@RequestParam(value="ids")int[] ids) {
+		
+		
 		List<Employee> eList = new ArrayList<>();
 		for (int i : ids) {
 			Employee employee = new Employee();
 			employee.setEmployeeId(i);
 			eList.add(employee);
+			employee = employeeService.getEmployeeById(i);
+			/*------------------以上单删除employee表中数据，考虑之后还是决定连带着将住宿相关信息细节一并删除,并添加到历史记录中去--------------------------------*/
+			List<RoomEmployeeDetails> details = roomEmployeeDetailsService.getLivingByEmployeeNo(employee.getEmployeeNo());
+			for (RoomEmployeeDetails r : details) {
+				roomEmployeeDetailsService.deleteDetails(r); 
+				/*r.setDateOut(new Date());
+				r.setEmployeeNo(employee.getEmployeeNo());
+				roomEmployeeDetailsService.addHistoryDetails(r);*/
+			}			
+			/*-------------------------------------------------------------------------*/
 		}
 		employeeService.deleteEmployeeByList(eList); //批量删除
-		String result = "{\"success\":true,\"msg\":\"删除成功！\"}";
+		String result = "{\"success\":true,\"msg\":\"删除成功！\"}";  
+		
 		return result;
 		
 	}
@@ -146,7 +216,9 @@ public class EmployeeController {
 			@RequestParam(value="employeeJob")String employeeJob,
 			@RequestParam(value="employeeWorkplace")String employeeWorkplace,
 			@RequestParam(value="employeeFamily")String employeeFamily,
-			@RequestParam(value="employeeRemark")String employeeRemark) {
+			@RequestParam(value="employeeRemark")String employeeRemark,
+			@RequestParam(value="employeeStatus")Integer employeeStatus,
+			@RequestParam(value="phoneNo")String phoneNo) {
 		Employee employee = new Employee();
 		String result;
 		employee.setEmployeeName(employeeName);
@@ -156,6 +228,8 @@ public class EmployeeController {
 		employee.setEmployeeFamily(employeeFamily);
 		employee.setEmployeeWorkplace(employeeWorkplace);
 		employee.setEmployeeRemark(employeeRemark);	
+		employee.setEmployeeStatus(employeeStatus);
+		employee.setPhoneNo(phoneNo);
 		try {
 			employeeService.addEmployee(employee);
 			result = "{\"success\":true,\"msg\":\"添加成功\"}";
@@ -182,7 +256,9 @@ public class EmployeeController {
 			@RequestParam(value="employeeWorkplace")String employeeWorkplace,
 			@RequestParam(value="employeeFamily")String employeeFamily,
 			@RequestParam(value="employeeRemark")String employeeRemark,
-			@RequestParam(value="employeeId")Integer employeeId) {
+			@RequestParam(value="employeeId")Integer employeeId,
+			@RequestParam(value="employeeStatus")Integer employeeStatus,
+			@RequestParam(value="phoneNo")String phoneNo) {
 		Employee employee = new Employee();
 		String result;
 		employee.setEmployeeId(employeeId);
@@ -193,11 +269,42 @@ public class EmployeeController {
 		employee.setEmployeeFamily(employeeFamily);
 		employee.setEmployeeWorkplace(employeeWorkplace);
 		employee.setEmployeeRemark(employeeRemark);	
+		employee.setEmployeeStatus(employeeStatus);
+		employee.setPhoneNo(phoneNo);
 		employeeService.updateEmployee(employee);
+		
 		result = "{\"success\":true,\"msg\":\"修改成功\"}";
 		return result;
 	}
 	
 	
+	@RequestMapping(value="/getEmployeeByRoom",produces="application/json;charset=utf-8",method=RequestMethod.GET)
+	@ResponseBody
+	public String getEmployeeByRoom(@RequestParam(value="factory",required=false)String factoryName,
+			@RequestParam(value="building",required=false)Integer building,
+			@RequestParam(value="unit",required=false)Integer unit,
+			@RequestParam(value="floor",required=false)Integer floor,
+			@RequestParam(value="room",required=false)String roomNo/*,
+			@RequestParam(value="page",defaultValue="1")int pageNum,
+			@RequestParam(value="rows",defaultValue="5")int pageSize*/) {
+		
+		Room room = new Room();
+		room.setFactoryName(factoryName);
+		room.setBuilding(building);
+		room.setUnit(unit);
+		room.setFloor(floor);
+		room.setRoomNo(roomNo);
+		//employeeService.getEmployeeByRoom(room);
+		
+		/*PageHelper.startPage(pageNum, pageSize);
+		List<Employee> list = employeeService.getEmployeeByRoom(room);
+		PageInfo<Employee> p = new PageInfo<>(list);
+		long total = p.getTotal();
+		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
+		String JSON = "{\"total\":"+total+",\"rows\":"+json+"}";*/
+		List<Employee> list = employeeService.getEmployeeByRoom(room);
+		String JSON1 = "{\"total\":"+list.size()+",\"rows\":"+JSON.toJSONString(list,SerializerFeature.WriteDateUseDateFormat)+"}";
+		return JSON1;
+	}
 	
 }

@@ -13,9 +13,9 @@
 			<tr>
 				<th data-options="field:'ck',checkbox:true"></th>
 				<th data-options="field:'id',width:30">系统ID</th>
-				<th data-options="field:'employee',width:80" formatter="manageEmployee">员工姓名</th>
-				<th data-options="field:'employeeNo',width:80">员工工号</th>
 				<th data-options="field:'roomNo',width:80">房间</th>
+				<th data-options="field:'employee',width:80" formatter="manageEmployee">员工姓名</th>
+				<th data-options="field:'employeeNo',width:80">员工工号</th>				
 				<th data-options="field:'dateIn',width:80">入住时间</th>
 				<th data-options="field:'dateOut',width:80" >搬离时间</th>			
 			</tr>
@@ -163,7 +163,7 @@
 		$('#dg').datagrid({  
             title : '员工信息',  
             iconCls : 'icon-ok',  
-            pageSize : 5,//默认选择的分页是每页5行数据  
+            pageSize : 15,//默认选择的分页是每页5行数据  
             pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
             nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
             striped : true,//设置为true将交替显示行背景。  
@@ -187,7 +187,7 @@
 		 $('#dgEmployee').datagrid({  
 	            title : '员工信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,//默认选择的分页是每页5行数据  
+	            pageSize : 15,//默认选择的分页是每页5行数据  
 	            pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
 	            nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
 	            striped : true,//设置为true将交替显示行背景。  
@@ -209,9 +209,9 @@
 	}
 	function loadRoomGrid(){
 		 $('#dgRoom').datagrid({  
-	            title : '员工信息',  
+	            title : '宿舍信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,//默认选择的分页是每页5行数据  
+	            pageSize : 15,//默认选择的分页是每页5行数据  
 	            pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
 	            nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
 	            striped : true,//设置为true将交替显示行背景。  
@@ -231,10 +231,10 @@
 	        });   
 	}
 	function loadEmployeeGridByQ(queryConditon){
-		 $('#dgRoom').datagrid({  
+		 $('#dgEmployee').datagrid({  
 	            title : '员工信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,//默认选择的分页是每页5行数据  
+	            pageSize : 15,//默认选择的分页是每页5行数据  
 	            pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
 	            nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
 	            striped : true,//设置为true将交替显示行背景。  
@@ -256,10 +256,10 @@
 		 
 	}
 	function loadRoomGridByQ(queryConditon){
-		 $('#dgEmployee').datagrid({  
+		 $('#dgRoom').datagrid({  
 	            title : '宿舍信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,//默认选择的分页是每页5行数据  
+	            pageSize : 15,//默认选择的分页是每页5行数据  
 	            pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
 	            nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
 	            striped : true,//设置为true将交替显示行背景。  
@@ -335,6 +335,7 @@
 		}
 	}
 	function doSearch(){
+		//alert(queryCondition.employeeName);
 		var queryCondition = {'employeeName':$('#paramEmployee').val()};
 		//alert(queryCondition.employeeName);
 		loadEmployeeGridByQ(queryCondition);
@@ -344,12 +345,17 @@
 		loadEmployeeGrid(null);
 	}
 	
+	function dormSearch(){
+		var queryCondition = {'roomNo':$('#paramDormpop').val()};
+		loadRoomGridByQ(queryCondition);
+	}
+	
 	//------------------------------
 	function loadDataGrid(){
 		 $('#dg').datagrid({  
 	            title : '员工信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,//默认选择的分页是每页5行数据  
+	            pageSize : 15,//默认选择的分页是每页5行数据  
 	            pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
 	            nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
 	            striped : true,//设置为true将交替显示行背景。  

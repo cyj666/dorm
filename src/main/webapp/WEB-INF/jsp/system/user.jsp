@@ -30,10 +30,10 @@
 		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="editUser()" plain="true">修改用户</a> 
 		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove" onclick="deleteUser()" plain="true">删除用户</a>
 		<a href="#" class="easyui-linkbutton reset" iconCls="icon-undo" onclick="resetPwd()" plain="true">重置密码</a>
-		<div>
+		 <!-- <div>
 			账号: <input class="easyui-textbox" style="width:80px" id="username">		
 		<a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="userSearch()">搜索</a>
-		</div>
+		</div>-->
 	</div>
 	
 	<div id="dlg" class="easyui-dialog" data-options="modal:true" title="数据参数" style="width: 400px; height: 500px;" closed="true" buttons="#dlg-buttons">
@@ -353,8 +353,10 @@
 			}
 	}
 	function userSearch(){
-		alert("ok");
-		var queryCondition = {'username':$('#username').val()};
+		//alert("ok");
+
+;
+		alert(queryCondition.username);
 		loadDataGridByQ(queryCondition);
 	}
 	function loadDataGridByQ(queryConditon){

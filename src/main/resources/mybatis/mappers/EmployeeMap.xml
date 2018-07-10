@@ -8,7 +8,7 @@
 
 
 
-	<select id="getEmployee" resultType="Employee" parameterType="employee">
+	<select id="getEmployee" resultType="Employee" parameterType="employee" useCache="false">
 		select * from employees
 		<where>
 			<if test="employeeId != null and employeeId !='' ">
@@ -86,11 +86,30 @@
 			<if test="employeeRemark != null and employeeRemark !='' ">
 				and employee_remark = #{employeeRemark}
 			</if>
+			<if test="phoneNo != null and phoneNo !='' ">
+				and phone_no = #{phoneNo}
+			</if>
+			<if test="employeeStatus != null and employeeStatus !='' ">
+				and employee_status = #{employeeStatus}
+			</if>
 		</where>
 	</select>
 
 	<select id="getAllEmployee" resultType="Employee">
 		select * from employees
+	</select>
+	
+	<select id="getEmployeeByRoom" resultMap="employeeMap" parameterType="room">
+		SELECT  e.employee_family,e.employee_id,e.employee_job,e.employee_name,e.employee_no,
+e.employee_remark,e.employee_sex,e.employee_status,e.employee_workplace,e.phone_no,
+r.building,r.factory_name,r.floor,r.remark,r.room_admin,r.room_id,r.room_no,r.room_status,
+r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
+		LEFT JOIN employees e ON er.employee_no = e.employee_no
+		WHERE r.factory_name = #{factoryName}
+		AND r.building = #{building}
+		AND r.unit=#{unit}
+		AND r.floor=#{floor}
+		AND r.room_no = #{roomNo}
 	</select>
 
 
@@ -103,6 +122,8 @@
 		<result property="employeeFamily" column="employee_family" />
 		<result property="employeeRemark" column="employee_remark" />
 		<result property="employeeNo" column="employee_no" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="employeeStatus" column="employee_status" />
 		<!-- 进行 多表关联插叙，关联房间 -->
 		<association property="room" column="room" javaType="com.dorm.pojo.Room">
 			<id property="roomId" column="room_id" />
@@ -126,22 +147,112 @@
 		LEFT JOIN rooms r ON er.room_no = r.room_no
 		WHERE er.date_out IS NULL
 	</select>
+	
+	<select id="getAllEmployeeDetail2" resultMap="employeeMap">
+		select * from
+		employees e LEFT JOIN employees_rooms er ON e.employee_no =
+		er.employee_no
+		LEFT JOIN rooms r ON er.room_no = r.room_no
+		WHERE er.date_out IS NULL  and r.room_id IS NULL
+	</select>
+	
+		<select id="getEmployeesDetail" resultMap="employeeMap" parameterType="employee">
+		select * from
+		employees e LEFT JOIN employees_rooms er ON e.employee_no =
+		er.employee_no
+		LEFT JOIN rooms r ON er.room_no = r.room_no 
+		<where>
+			<if test="employeeId != null and employeeId !='' ">
+				and e.employee_id = #{employeeId}
+			</if>
+			<if test="employeeName != null and employeeName !='' ">
+				and e.employee_name = #{employeeName}
+			</if>
+			<if test="employeeNo != null and employeeNo !='' ">
+				and e.employee_no = #{employeeNo}
+			</if>
+			<if test="employeeSex != null and employeeSex !='' ">
+				and e.employee_sex = #{employeeSex}
+			</if>
+			<if test="employeeJob != null and employeeJob !='' ">
+				and e.employee_job = #{employeeJob}
+			</if>
+			<if test="employeeWorkplace != null and employeeWorkplace !='' ">
+				and e.employee_workplace = #{employeeWorkplace}
+			</if>
+			<if test="employeeFamily != null and employeeFamily !='' ">
+				and e.employee_family = #{employeeFamily}
+			</if>
+			<if test="employeeRemark != null and employeeRemark !='' ">
+				and e.employee_remark = #{employeeRemark}
+			</if>
+			<if test="phoneNo != null and phoneNo !='' ">
+				and phone_no = #{phoneNo}
+			</if>
+			<if test="employeeStatus != null and employeeStatus !='' ">
+				and employee_status = #{employeeStatus}
+			</if>
+			and er.date_out IS NULL 
+		</where>
+	</select>
+	
+	<select id="getEmployeesDetail2" resultMap="employeeMap" parameterType="employee">
+		select * from
+		employees e LEFT JOIN employees_rooms er ON e.employee_no =
+		er.employee_no
+		LEFT JOIN rooms r ON er.room_no = r.room_no 
+		<where>
+			<if test="employeeId != null and employeeId !='' ">
+				and e.employee_id = #{employeeId}
+			</if>
+			<if test="employeeName != null and employeeName !='' ">
+				and e.employee_name = #{employeeName}
+			</if>
+			<if test="employeeNo != null and employeeNo !='' ">
+				and e.employee_no = #{employeeNo}
+			</if>
+			<if test="employeeSex != null and employeeSex !='' ">
+				and e.employee_sex = #{employeeSex}
+			</if>
+			<if test="employeeJob != null and employeeJob !='' ">
+				and e.employee_job = #{employeeJob}
+			</if>
+			<if test="employeeWorkplace != null and employeeWorkplace !='' ">
+				and e.employee_workplace = #{employeeWorkplace}
+			</if>
+			<if test="employeeFamily != null and employeeFamily !='' ">
+				and e.employee_family = #{employeeFamily}
+			</if>
+			<if test="employeeRemark != null and employeeRemark !='' ">
+				and e.employee_remark = #{employeeRemark}
+			</if>
+			<if test="phoneNo != null and phoneNo !='' ">
+				and phone_no = #{phoneNo}
+			</if>
+			<if test="employeeStatus != null and employeeStatus !='' ">
+				and employee_status = #{employeeStatus}
+			</if>
+			and er.date_out IS NULL and r.room_id IS NULL
+		</where>
+	</select>
+	
+	
 
 	<insert id="addEmployee" useGeneratedKeys="true" keyProperty="employee_id"
 		parameterType="employee">
 		insert into
-		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no)
-		values(#{employeeName},#{employeeSex},#{employeeJob},#{employeeWorkplace},#{employeeFamily},#{employeeRemark},#{employeeNo})
+		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no,phone_no,employee_status)
+		values(#{employeeName},#{employeeSex},#{employeeJob},#{employeeWorkplace},#{employeeFamily},#{employeeRemark},#{employeeNo},#{phoneNo},#{employeeStatus})
 	</insert>
 
 	<insert id="addEmployeeByList" useGeneratedKeys="true"
 		parameterType="java.util.List">
 		insert into
-		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no)
+		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no,phone_no,employee_status)
 		values
 		<foreach collection="list" item="e" index="i" separator=",">
 			(#{e.employeeName},#{e.employeeSex},#{e.employeeJob},#{e.employeeWorkplace},#{e.employeeFamily},
-			#{e.employeeRemark},#{e.employeeNo})
+			#{e.employeeRemark},#{e.employeeNo},#{phoneNo},#{employeeStatus})
 		</foreach>
 	</insert>
 
@@ -199,6 +310,12 @@
 			<if test="employeeRemark != null and employeeRemark !='' ">
 				employee_remark = #{employeeRemark},
 			</if>
+			<if test="phoneNo != null and phoneNo !='' ">
+				phone_no = #{phoneNo},
+			</if>
+			<if test="employeeStatus != null and employeeStatus !='' ">
+				employee_status = #{employeeStatus},
+			</if>
 		</set>
 		<where>
 			employee_id = #{employeeId}
@@ -242,6 +359,16 @@
 			<foreach collection="list" item="e" index="i" separator=" "
 				open="case employee_id" close="end">
 				when #{e.employeeId} then #{e.employeeNo}
+			</foreach>
+			,phone_no =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.phoneNo }
+			</foreach>
+			,employee_status =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.employeeStatus }
 			</foreach>
 		</set>
 		<where>

@@ -42,6 +42,7 @@ import com.dorm.service.RoomEmployeeDetailsService;
 import com.dorm.service.RoomService;
 import com.dorm.service.UserService;
 import com.dorm.tool.CaptchaUtil;
+import com.dorm.tool.ImgUtil;
 
 @Controller
 public class BaseController {
@@ -74,6 +75,15 @@ public class BaseController {
 	@ResponseBody
 	public void captcha(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		CaptchaUtil.outputCaptcha(request, response);
+	}
+	
+	/**
+	 * 测试
+	 */
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	@ResponseBody
+	public void test(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ImgUtil.show("D:\\lly.jpg", request, response);
 	}
 	
 	
@@ -196,6 +206,14 @@ public class BaseController {
 		};
 		return new WebAsyncTask<>(5000, callable);
 	}*/
+	
+	@RequestMapping(value="/excel",produces="text/html;charset=utf-8",method=RequestMethod.GET)
+	@ResponseBody
+	public String getExcelTest(@RequestParam(required=true,value="arr")String arr) {
+		
+		return arr;
+		
+	}
 	
 
 	

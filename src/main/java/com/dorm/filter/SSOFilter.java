@@ -20,6 +20,9 @@ import com.dorm.sessionDao.RedisSessionDao;
 
 /**
  * 单点登录？
+ * 用redis来共享session，不过好像该项目规模太小，没有必要用，所以就放着等以后要用的时候
+ * 开关在spring-shiro.xml配置文件中，不用redis,用最简单的ehcache就行了
+ * 1、把 会话DAO的实现方式修改；2、取消/注册该过滤器在过滤器链中
  * @author DELL
  *
  */
@@ -28,7 +31,7 @@ public class SSOFilter extends AccessControlFilter{
 	/*@Autowired
 	private RedisDb redisDb;*/
 	
-	@Autowired
+	//@Autowired
 	RedisSessionDao redisSessonDao;
 	
 	@Override
@@ -79,7 +82,7 @@ public class SSOFilter extends AccessControlFilter{
 		if (session==null) {
 			return true;
 		}
-		System.out.println(session.getId()+"/"+session.getHost()+"/"+session.getTimeout()+"/"+session.getLastAccessTime());
+		//System.out.println(session.getId()+"/"+session.getHost()+"/"+session.getTimeout()+"/"+session.getLastAccessTime());
 		Map<Object, Object> map = session.getAttributes();
 		if (map==null) {
 			return true;

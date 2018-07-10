@@ -4,6 +4,7 @@
 	xmlns:websocket="http://www.springframework.org/schema/websocket"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:task="http://www.springframework.org/schema/task" 
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 						http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 						http://www.springframework.org/schema/context 
@@ -17,7 +18,9 @@
 						http://www.springframework.org/schema/websocket 
 						http://www.springframework.org/schema/websocket/spring-websocket.xsd
 						http://www.springframework.org/schema/cache
-						http://www.springframework.org/schema/cache/spring-cache-4.0.xsd"
+						http://www.springframework.org/schema/cache/spring-cache-4.0.xsd
+						http://www.springframework.org/schema/task  
+						http://www.springframework.org/schema/task/spring-task-4.0.xsd "
 						>
 
 	<!-- 导入外部配置文件 -->
@@ -58,7 +61,7 @@
    <!-- 启用缓存注解功能   @Cacheable(key="",value="")value对应ehcache.xml中的name。@CacheEvict-->
 	<cache:annotation-driven cache-manager="cacheManager2" />
 	
-  
+  <task:annotation-driven />
 
 	
 		

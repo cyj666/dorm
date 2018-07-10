@@ -99,4 +99,37 @@ public class RoomServiceImpl implements RoomService {
 		return roomMapper.getAllRoomDetails();
 	}
 
+	@Override
+	public List<String> getFactory() {
+		// TODO Auto-generated method stub
+		return roomMapper.getFactory();
+	}
+
+	@Override
+	public List<String> getBuilding(String factory) {
+		// TODO Auto-generated method stub
+		return roomMapper.getBuilding(factory);
+	}
+
+	@Override
+	public List<String> getUnit(String factory, String building) {
+		// TODO Auto-generated method stub
+		return roomMapper.getUnit(factory, building);
+	}
+
+	@Override
+	public List<String> getFloor(String factory, String building, String unit) {
+		// TODO Auto-generated method stub
+		return roomMapper.getFloor(factory, building, unit);
+	}
+
+	@Override
+	public List<Room> getRoomDetails(Room room) {
+		// TODO Auto-generated method stub
+		return roomMapper.getRoomDetails(room);
+	}
+	
+	
+	
+
 }

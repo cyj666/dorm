@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.mapper.WeRateMapper">
+	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/> -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+
+
+
+	<!--  <select id="getWeRates" resultType="WeRate" parameterType="WeRate">
+		select * from werates
+		<where>			
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>
+			<if test="date != null and date !='' ">
+				and date = #{date}
+			</if>
+			<if test="rate != null and rate !='' ">
+				and rate = #{rate}
+			</if>			
+		</where>
+	</select>-->
+	<select id="getWeRates" resultType="WeRate" parameterType="WeRate">
+		select * from rate
+		<where>			
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>
+			<if test="date != null and date !='' ">
+				and date = #{date}
+			</if>
+			<if test="rate != null and rate !='' ">
+				and rate = #{rate}
+			</if>			
+		</where>
+	</select>
+
+
+	<insert id="addRate" useGeneratedKeys="true" keyProperty="id"
+		parameterType="weRate">
+		insert into
+		werates(room_no,date,rate)
+		values(#{roomNo},#{date},#{rate})
+	</insert>
+
+
+	<delete id="deleteRate" parameterType="weRate">
+		delete from werates
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</delete>
+
+
+	<update id="updateRate" parameterType="weRate">
+		update werates
+		<set>			
+			<if test="roomNo != null and roomNo !='' ">
+				room_no = #{roomNo},
+			</if>
+			<if test="date != null and date !='' ">
+				date = #{date},
+			</if>
+			<if test="rate != null and rate !='' ">
+				rate = #{rate},
+			</if>
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+</mapper>

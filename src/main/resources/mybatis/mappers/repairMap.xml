@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.mapper.RepairMapper">
+	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/> -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+
+
+
+	<select id="getRepair" resultType="Repair" parameterType="Repair">
+		select * from repair
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+			<if test="declarant != null and declarant !='' ">
+				and declarant = #{declarant}
+			</if>
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>				
+			<if test="createDate != null and createDate !='' ">
+				and create_date = #{createDate}
+			</if>
+			<if test="resultDate != null and resultDate !='' ">
+				and result_date = #{resultDate}
+			</if>
+			<if test="repairman != null and repairman !='' ">
+				and repairman = #{repairman}
+			</if>			
+		</where>
+	</select>
+
+
+	<insert id="addRepair" useGeneratedKeys="true" keyProperty="id"
+		parameterType="Repair">
+		insert into
+		repair(room_no,reason,result,remark,declarant,create_date,result_date,repairman)
+		values(#{roomNo},#{reason},#{result},#{remark},#{declarant},#{createDate},#{resultDate},#{repairman})
+	</insert>
+
+
+	<delete id="deleteRepair" parameterType="Repair">
+		delete from repair
+		<where>			
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</delete>
+
+
+	<update id="updateRepair" parameterType="Repair">
+		update repair
+		<set>			
+			<if test="roomNo != null and roomNo !='' ">
+				room_no = #{roomNo},
+			</if>
+			<if test="createDate != null and createDate !='' ">
+				create_date = #{createDate},
+			</if>
+			<if test="resultDate != null and resultDate !='' ">
+				result_date = #{resultDate},
+			</if>
+			<if test="result != null and result !='' ">
+				result = #{result},
+			</if>
+			<if test="reason != null and reason !='' ">
+				reason = #{reason},
+			</if>
+			<if test="remark != null and remark !='' ">
+				remark = #{remark},
+			</if>
+			<if test="declarant != null and declarant !='' ">
+				declarant = #{declarant},
+			</if>
+			<if test="repairman != null and repairman !='' ">
+				repairman = #{repairman},
+			</if>			
+		</set>
+		<where>
+			<if test="roomNo != null and roomNo !='' ">
+				and room_no = #{roomNo}
+			</if>
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</update>
+
+
+</mapper>

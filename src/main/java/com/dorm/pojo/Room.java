@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Room implements Serializable {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4046008823302327350L;
+	private static final long serialVersionUID = 678328781303025566L;
 	private Integer roomId;
 	private String factoryName;  //分厂名
 	private Integer building;//楼栋编号
@@ -19,6 +20,8 @@ public class Room implements Serializable {
 	private Integer size; //房间容纳的人数
 	private List<Employee> employees; //住宿的员工
 	private String roomAdmin;  //宿管
+	private Integer roomStatus;
+	private Rate rate;
 	public Integer getRoomId() {
 		return roomId;
 	}
@@ -88,11 +91,30 @@ public class Room implements Serializable {
 	public void setRoomAdmin(String roomAdmin) {
 		this.roomAdmin = roomAdmin;
 	}
-	@Override
+	/*@Override
 	public String toString() {
 		return "Room [roomId=" + roomId + ", factoryName=" + factoryName + ", building=" + building + ", unit=" + unit
 				+ ", floor=" + floor + ", type=" + type + ", remark=" + remark + ", roomNo=" + roomNo + ", size=" + size
 				+ ", employees=" + employees + ", roomAdmin=" + roomAdmin + "]";
+	}*/
+	public Integer getRoomStatus() {
+		return roomStatus;
+	}
+	public void setRoomStatus(Integer roomStatus) {
+		this.roomStatus = roomStatus;
+	}
+	public Rate getRate() {
+		return rate;
+	}
+	public void setRate(Rate rate) {
+		this.rate = rate;
+	}
+	@Override
+	public String toString() {
+		return "Room [roomId=" + roomId + ", factoryName=" + factoryName + ", building=" + building + ", unit=" + unit
+				+ ", floor=" + floor + ", type=" + type + ", remark=" + remark + ", roomNo=" + roomNo + ", size=" + size
+				+ ", employees=" + employees + ", roomAdmin=" + roomAdmin + ", roomStatus=" + roomStatus + ", rate="
+				+ rate + "]";
 	}
 	
 	

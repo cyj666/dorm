@@ -1,6 +1,7 @@
 package com.dorm.pojo;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Employee implements Serializable {
 	
@@ -17,6 +18,11 @@ public class Employee implements Serializable {
 	private String employeeFamily;   //家属信息	
 	private String employeeRemark;		//备注
 	private Room room;           //住宿的房间
+	
+	private String phoneNo;  //手机号码
+	
+	private Integer employeeStatus;
+	
 	public Integer getEmployeeId() {
 		return employeeId;
 	}
@@ -72,15 +78,32 @@ public class Employee implements Serializable {
 	public void setRoom(Room room) {
 		this.room = room;
 	}
-	@Override
+	/*@Override
 	public String toString() {
 		return "Employee [employeeId=" + employeeId + ", employeeNo=" + employeeNo + ", employeeName=" + employeeName
 				+ ", employeeSex=" + employeeSex + ", employeeJob=" + employeeJob + ", employeeWorkplace="
 				+ employeeWorkplace + ", employeeFamily=" + employeeFamily + ", employeeRemark=" + employeeRemark
 				+ ", room=" + room + "]";
+	}*/
+	public String getPhoneNo() {
+		return phoneNo;
 	}
-	
-	
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
+	}
+	public Integer getEmployeeStatus() {
+		return employeeStatus;
+	}
+	public void setEmployeeStatus(Integer employeeStatus) {
+		this.employeeStatus = employeeStatus;
+	}
+	@Override
+	public String toString() {
+		return "Employee [employeeId=" + employeeId + ", employeeNo=" + employeeNo + ", employeeName=" + employeeName
+				+ ", employeeSex=" + employeeSex + ", employeeJob=" + employeeJob + ", employeeWorkplace="
+				+ employeeWorkplace + ", employeeFamily=" + employeeFamily + ", employeeRemark=" + employeeRemark
+				+ ", room=" + room + ", phoneNo=" + phoneNo + ", employeeStatus=" + employeeStatus + "]";
+	}
 	
 	
 }

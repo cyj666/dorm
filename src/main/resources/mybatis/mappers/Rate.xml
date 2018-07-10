@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dorm.mapper.RateMapper">
+	<!-- <cache type = "org.mybatis.caches.ehcache.EhcacheCache"/> -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />
+
+
+	<select id="getRates" resultType="Rate" parameterType="Rate">
+		SELECT * FROM rate
+		<where>			
+			<if test="roomId != null and roomId !='' ">
+				and room_id = #{roomId}
+			</if>
+			<if test="year != null and year !='' ">
+				and year = #{year}
+			</if>			
+		</where>
+	</select>
+
+
+	<insert id="addRate" useGeneratedKeys="true" keyProperty="id"
+		parameterType="Rate">
+		insert into rate(room_id,`year`,jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,`dec`)
+		values(#{roomId},#{year},#{jan},#{feb},#{mar},#{apr},#{may},#{jun},#{jul},#{aug},#{sep},#{oct},#{nov},#{dec})
+	</insert>
+
+
+	<delete id="deleteRate" parameterType="Rate">
+		delete from rate
+		<where>			
+			<if test="id != null and id !='' ">
+				and id = #{id}
+			</if>
+		</where>
+	</delete>
+
+
+	<update id="updateRate" parameterType="Rate">
+		update rate
+		<set>			
+			<if test="roomId != null and roomId !='' ">
+				room_id = #{roomId},
+			</if>
+			<if test="year != null and year !='' ">
+				year = #{year},
+			</if>
+			<if test="jan != null and jan !='' ">
+				jan = #{jan},
+			</if>
+			<if test="feb != null and feb !='' ">
+				feb = #{feb},
+			</if>
+			<if test="mar != null and mar !='' ">
+				mar = #{mar},
+			</if>
+			<if test="apr != null and apr !='' ">
+				apr = #{apr},
+			</if>
+			<if test="may != null and may !='' ">
+				may = #{may},
+			</if>
+			<if test="jun != null and jun !='' ">
+				jun = #{jun},
+			</if>
+			<if test="jul != null and jul !='' ">
+				jul = #{jul},
+			</if>
+			<if test="aug != null and aug !='' ">
+				aug = #{aug},
+			</if>
+			<if test="sep != null and sep !='' ">
+				sep = #{sep},
+			</if>
+			<if test="oct != null and oct !='' ">
+				oct = #{oct},
+			</if>
+			<if test="nov != null and nov !='' ">
+				nov = #{nov},
+			</if>
+			<if test="dec != null and dec !='' ">
+				dec = #{dec},
+			</if>
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+</mapper>

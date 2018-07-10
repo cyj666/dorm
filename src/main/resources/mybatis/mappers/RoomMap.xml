@@ -41,6 +41,9 @@
 			<if test="roomAdmin != null and roomAdmin !='' ">
 				and room_admin = #{roomAdmin}
 			</if>
+			<if test="roomStatus != null and roomStatus !='' ">
+				and room_status = #{roomStatus}
+			</if>
 			order by factory_name,unit,floor
 		</where>
 	</select>
@@ -90,6 +93,9 @@
 			<if test="roomAdmin != null and roomAdmin !='' ">
 				and room_admin = #{roomAdmin}
 			</if>
+			<if test="roomStatus != null and roomStatus !='' ">
+				and room_status = #{roomStatus}
+			</if>
 		</where>
 	</select>
 
@@ -98,6 +104,25 @@
 		select * from rooms order by
 		factory_name,unit,floor
 	</select>
+	
+	
+	<select id="getFactory" resultType="String">
+	SELECT factory_name FROM rooms GROUP BY factory_name
+	</select>
+	
+	
+	<select id="getBuilding" resultType="String" parameterType="string">
+	SELECT building FROM rooms WHERE factory_name = #{factory} GROUP BY building
+	</select>
+	
+	<select id="getUnit" resultType="String" parameterType="string">
+	SELECT unit FROM rooms WHERE factory_name = #{factory} AND building=#{building} GROUP BY unit
+	</select>
+	
+	<select id="getFloor" resultType="String" parameterType="string">
+	SELECT floor FROM rooms WHERE factory_name = #{factory} AND building=#{building}  AND unit=#{unit} GROUP BY floor
+	</select>
+	
 
 	<resultMap id="roomMap" type="com.dorm.pojo.Room">
 		<id property="roomId" column="room_id" />
@@ -110,6 +135,23 @@
 		<result property="size" column="size" />
 		<result property="roomAdmin" column="room_admin" />
 		<result property="roomNo" column="room_no" />
+		<result property="roomStatus" column="room_status" />
+		<association property="rate" javaType="com.dorm.pojo.Rate">
+		<id property="id" column="rate_id" />
+		<result property="year" column="year" />
+		<result property="jan" column="jan" />
+		<result property="feb" column="feb" />
+		<result property="mar" column="mar" />
+		<result property="apr" column="apr" />
+		<result property="may" column="may" />
+		<result property="jun" column="jun" />
+		<result property="jul" column="jul" />
+		<result property="aug" column="aug" />
+		<result property="Sep" column="Sep" />
+		<result property="oct" column="oct" />
+		<result property="nov" column="nov" />
+		<result property="dec" column="dec" />
+		</association>
 		<!-- 进行 多表关联插叙，先关联user和role -->
 		<collection property="employees"  ofType="com.dorm.pojo.Employee">
 		<id property="employeeId" column="employee_id" />
@@ -121,27 +163,72 @@
 		<result property="employeeRemark" column="employee_remark" />
 		<result property="employeeNo" column="employee_no" />
 		</collection>
+		
 	</resultMap>
 	
 	<select id="getAllRoomDetails" resultMap="roomMap">
-		SELECT * FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
+		SELECT *,rate.id AS rate_id FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
 		LEFT JOIN employees e ON er.employee_no = e.employee_no
+		LEFT JOIN rate ON rate.room_id = r.room_id 
+		WHERE rate.`year` = YEAR 
+	</select>
+	
+	<select id="getRoomDetails" resultMap="roomMap" parameterType="room">
+		SELECT *,rate.id AS rate_id FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
+		LEFT JOIN employees e ON er.employee_no = e.employee_no
+		LEFT JOIN rate ON rate.room_id = r.room_id
+		<where>
+			<if test="roomId != null and roomId !='' ">
+				and r.room_id = #{roomId}
+			</if>
+			<if test="factoryName != null and factoryName !='' ">
+				and r.factory_name = #{factoryName}
+			</if>
+			<if test="building != null and building !='' ">
+				and r.building = #{building}
+			</if>
+			<if test="unit != null and unit !='' ">
+				and r.unit = #{unit}
+			</if>
+			<if test="floor != null and floor !='' ">
+				and r.floor = #{floor}
+			</if>
+			<if test="type != null and type !='' ">
+				and r.type = #{type}
+			</if>
+			<if test="remark != null and remark !='' ">
+				and r.remark = #{remark}
+			</if>
+			<if test="roomNo != null and roomNo !='' ">
+				and r.room_no = #{roomNo}
+			</if>
+			<if test="size != null and size !='' ">
+				and r.size = #{size}
+			</if>
+			<if test="roomAdmin != null and roomAdmin !='' ">
+				and r.room_admin = #{roomAdmin}
+			</if>
+			<if test="roomStatus != null and roomStatus !='' ">
+				and r.room_status = #{roomStatus}
+			</if>
+			and rate.`year` = YEAR
+		</where>
 	</select>
 
 	<insert id="addRoom" useGeneratedKeys="true" keyProperty="room_id"
 		parameterType="room">
 		insert into
-		rooms(factory_name,building,unit,floor,type,remark,room_no,size,room_admin)
-		values(#{factoryName},#{building},#{unit},#{floor},#{type},#{remark},#{roomNo},#{size},#{roomAdmin})
+		rooms(factory_name,building,unit,floor,type,remark,room_no,size,room_admin,room_status)
+		values(#{factoryName},#{building},#{unit},#{floor},#{type},#{remark},#{roomNo},#{size},#{roomAdmin},#{roomStatus})
 	</insert>
 
 	<insert id="addRoomByList" useGeneratedKeys="true"
 		parameterType="java.util.List">
 		insert into
-		rooms(factory_name,building,unit,floor,type,remark,room_no,size,room_admin)
+		rooms(factory_name,building,unit,floor,type,remark,room_no,size,room_admin,room_status)
 		values
 		<foreach collection="list" item="e" index="i" separator=",">
-			(#{factoryName},#{building},#{unit},#{floor},#{type},#{remark},#{roomNo},#{size},#{roomAdmin})
+			(#{factoryName},#{building},#{unit},#{floor},#{type},#{remark},#{roomNo},#{size},#{roomAdmin},#{roomStatus})
 		</foreach>
 	</insert>
 
@@ -203,6 +290,9 @@
 			<if test="roomAdmin != null and roomAdmin !='' ">
 				room_admin = #{roomAdmin},
 			</if>
+			<if test="roomStatus != null and roomStatus !='' ">
+				room_status = #{roomStatus},
+			</if>
 		</set>
 		<where>
 			room_id = #{roomId}
@@ -252,6 +342,11 @@
 			<foreach collection="list" item="e" index="i" separator=" "
 				open="case room_id" close="end">
 				when #{e.roomId} then #{e.roomAdmin}
+			</foreach>
+			,room_status =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case room_id" close="end">
+				when #{e.roomId} then #{e.roomStatus}
 			</foreach>
 		</set>
 		<where>

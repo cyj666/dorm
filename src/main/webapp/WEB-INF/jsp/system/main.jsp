@@ -69,13 +69,13 @@
 					<li data-options="attributes:{'href':'buss?url=room'}">
 						<span>宿舍管理</span>
 					</li>
-					<li data-options="attributes:{'href':'buss?url=details'}">
+					<li data-options="attributes:{'href':'buss?url=dorm'}">
 						<span>住宿管理</span>
 					</li>
-					 <li data-options="attributes:{'href':'buss?url=history'}">
+					<!--<li data-options="attributes:{'href':'buss?url=history'}">
 						<span>住宿历史</span>
-					</li>
-					<li data-options="attributes:{'href':'buss?url=werate'}">
+					</li>-->
+					<li data-options="attributes:{'href':'buss?url=rate'}">
 						<span>水电管理</span>
 					</li>
 					<li data-options="attributes:{'href':'buss?url=network'}">
@@ -84,9 +84,9 @@
 					<li data-options="attributes:{'href':'buss?url=repair'}">
 						<span>维修管理</span>
 					</li>
-					<li data-options="attributes:{'href':'buss?url=details'}">
+					<!--<li data-options="attributes:{'href':'buss?url=details'}">
 						<span>访客管理</span>
-					</li>					
+					</li>	-->				
 				</ul>
 			</li>
 			

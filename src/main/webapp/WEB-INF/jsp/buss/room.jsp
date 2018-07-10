@@ -12,17 +12,18 @@
 		<thead>
 			<tr>
 				<th data-options="field:'ck',checkbox:true"></th>
-				<th data-options="field:'roomId',width:30">系统ID</th>
-				<th data-options="field:'factoryName',width:30">厂区名</th>
-				<th data-options="field:'building',width:30">楼栋号</th>
-				<th data-options="field:'unit',width:30">单元号</th>
-				<th data-options="field:'floor',width:30">楼层</th>
-				<th data-options="field:'roomNo',width:30">房间号</th>
-				<th data-options="field:'roomAdmin',width:30">宿管</th>
-				<th data-options="field:'type',width:30">类型</th>
-				<th data-options="field:'size',width:40">房间规格（人/房间）</th>
-				<th data-options="field:'employees',width:40" formatter="manageEmployee">已住人数</th>
-				<th data-options="field:'remark',width:80">备注</th>
+				<th data-options="field:'roomId',width:10">系统ID</th>
+				<th data-options="field:'factoryName',width:10">厂区名</th>
+				<th data-options="field:'building',width:10">楼栋号</th>
+				<th data-options="field:'unit',width:10">单元号</th>
+				<th data-options="field:'floor',width:10">楼层</th>
+				<th data-options="field:'roomNo',width:10">房间号</th>
+				<th data-options="field:'roomStatus',width:10" formatter="manageStatus">房间状态</th>
+				<th data-options="field:'roomAdmin',width:10">宿管</th>
+				<th data-options="field:'type',width:10">类型</th>
+				<th data-options="field:'size',width:10">房间规格</th>
+				<th data-options="field:'employees',width:10" formatter="manageEmployee">已住人数</th>
+				<th data-options="field:'remark',width:90">日志</th>
 			</tr>
 		</thead>
 	</table>
@@ -68,6 +69,15 @@
 	    			<td><input class="easyui-textbox" type="text" name="roomNo" maxlength="30" required="true" missingMessage="必须填写"></input></td>
 	    		</tr>
 	    		<tr>
+					<td>状态:</td>
+					<td><select class="easyui-combobox" id="roomStatus2"
+						name="roomStatus" style="width: 80px;">
+							<option value="1">可用</option>
+							<option value="2">封禁</option>
+							<option value="3">其他</option>
+					</select></td>
+				</tr>
+	    		<tr>
 	    			<td>宿管:</td>
 	    			<td><input class="easyui-textbox" required="true"  maxlength="10" type="text" name="roomAdmin" missingMessage="宿管必须填写"></input></td>
 	    		</tr>
@@ -100,14 +110,14 @@
 	            title : '宿舍信息',  
 	            iconCls : 'icon-ok',  
 	            pageSize : 15,
-	            pageList : [ 5, 10, 15, 20 ],
-	            nowrap : true,
+	            pageList : [ 5, 10, 15, 20 ], 
+	            nowrap : false,
 	            striped : true,
 	            collapsible : true,  
 	            toolbar:"#toolbar", 
 	            url:'getAllRoom',
 	            loadMsg : '数据装载中......',  
-	            singleSelect:false,
+	            singleSelect:true,
 	            fitColumns:true,  
 	            checkOnSelect:true,
 	            selectOnCheck:true,
@@ -124,14 +134,14 @@
 	            iconCls : 'icon-ok',  
 	            pageSize : 15,
 	            pageList : [ 5, 10, 15, 20 ],
-	            nowrap : true,
+	            nowrap : false,//false列的内容超出长度自动换行
 	            striped : true,
 	            collapsible : true,  
 	            toolbar:"#toolbar", 
 	            url:'getRooms',
 	            method:"get",
 	            loadMsg : '数据装载中......',  
-	            singleSelect:false,
+	            singleSelect:true,
 	            fitColumns:true,  
 	            checkOnSelect:true,
 	            selectOnCheck:true,
@@ -154,6 +164,8 @@
 				$('#dlg').dialog('open').dialog('setTitle','编辑');
 				$('#fm').form('clear');
 				$('#fm').form('load',row[0]);
+				$('#roomStatus2')
+				.combobox('setValue', row[0].roomStatus);
 				url = 'updateRoom';
 			}else{
 				$.messager.show({
@@ -245,6 +257,21 @@
 				return arr+"人";
 			} else {
 				return "0";
+			}
+		}
+		function manageStatus(value, row, index) {  //value:后台传的值;row:整行的对象;index:下标，0123.。。
+			if (value != null) {
+				if(value=="1"){
+					var arr = '<span style="color:green;">可用</span>';
+				}else if(value=="2"){
+					var arr = '<span style="color:gray;">封禁</span>';
+				}else if(value=="3"){
+					var arr = '<span style="color:red;">其他(异常)</span>';
+				}
+				
+				return arr;
+			} else {
+				return "无";
 			}
 		}
 	</script>

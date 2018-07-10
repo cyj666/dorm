@@ -15,6 +15,8 @@
 					<th data-options="field:'employeeId',width:30">系统ID</th>
 					<th data-options="field:'employeeName',width:80">员工姓名</th>
 					<th data-options="field:'employeeNo',width:80">工号</th>
+					<th data-options="field:'phoneNo',width:80">手机号码</th>
+					<th data-options="field:'employeeStatus',width:80" formatter="manageStatus">状态</th>
 					<th data-options="field:'employeeSex',width:80">性别</th>
 					<th data-options="field:'employeeJob',width:80">职位</th>
 					<th data-options="field:'employeeWorkplace',width:80">工作地点</th>
@@ -29,11 +31,14 @@
 		<a href="#" class="easyui-linkbutton add" iconCls="icon-add"
 			onclick="create()" plain="true">新增</a> <a href="#"
 			class="easyui-linkbutton edit" iconCls="icon-edit" onclick="edit()"
-			plain="true">修改</a> <a href="#" class="easyui-linkbutton remove"
-			iconCls="icon-remove" onclick="del()" plain="true">删除</a> <a href="#"
-			class="easyui-linkbutton put" iconCls="icon-undo" onclick="del()"
+			plain="true">修改</a> 
+			<shiro:hasRole name="admin">
+			<a href="#" class="easyui-linkbutton remove"
+			iconCls="icon-remove" onclick="del()" plain="true">删除</a> 
+			</shiro:hasRole>
+			<a href="#" class="easyui-linkbutton put" iconCls="icon-undo" onclick="import()"
 			plain="true">导入</a> <a href="#" class="easyui-linkbutton export"
-			iconCls="icon-redo" onclick="del()" plain="true">导出</a>
+			iconCls="icon-redo" onclick="export()" plain="true">导出</a>		
 		<div>
 			员工姓名: <input class="easyui-textbox" id="employeeName"> 员工工号:
 			<input class="easyui-textbox" id="employeeNo"> 职位: <input
@@ -74,6 +79,21 @@
 							<option value="女">女</option>
 
 					</select></td>
+				</tr>
+				<tr>
+					<td>状态:</td>
+					<td><select class="easyui-combobox" id="employeeStatus2"
+						name="employeeStatus" style="width: 80px;">
+							<option value="1">在职</option>
+							<option value="2">离职</option>
+							<option value="3">其他</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td>手机号码</td>
+					<td><input class="easyui-textbox" id="phoneNo2" type="text"
+						name="phoneNo"
+						></input></td>
 				</tr>
 				<tr>
 					<td>职位:</td>
@@ -169,6 +189,7 @@
 				fit : true,
 				remoteSort : false,
 				pagination : true,
+				singleSelect:true,
 				rownumbers : true
 			//queryParams:queryConditon
 			});
@@ -193,6 +214,7 @@
 				fit : true,
 				remoteSort : false,
 				pagination : true,
+				singleSelect:true,
 				rownumbers : true,
 				queryParams : queryConditon
 			});
@@ -238,6 +260,10 @@
 						.textbox('setValue', row[0].employeeFamily);
 				$('#employeeRemark2')
 						.textbox('setValue', row[0].employeeRemark);
+				$('#employeeStatus2')
+				.combobox('setValue', row[0].employeeStatus);
+				$('#phoneNo2')
+				.textbox('setValue', row[0].phoneNo);
 				url = 'updateEmployee';
 			} else {
 				$.messager.show({
@@ -247,7 +273,7 @@
 				});
 			}
 		}
-
+		
 		function save() {
 			$('#fm').form('submit', {
 				url : url,
@@ -272,6 +298,7 @@
 				}
 			});
 		}
+		
 		function del() {
 			var rows = $('#dg').datagrid('getSelections');
 			var ids = [];
@@ -318,6 +345,21 @@
 		function managerRoom(value, row, index) {
 			if (value != null) {
 				var arr = "当前居住在：" + value.roomNo;
+				return arr;
+			} else {
+				return "无";
+			}
+		}
+		function manageStatus(value, row, index) {  //value:后台传的值;row:整行的对象;index:下标，0123.。。
+			if (value != null) {
+				if(value=="1"){
+					var arr = '<span style="color:green;">在职</span>';
+				}else if(value=="2"){
+					var arr = '<span style="color:red;">离职</span>';
+				}else if(value=="3"){
+					var arr = '<span style="color:gray;">其他(异常)</span>';
+				}
+				
 				return arr;
 			} else {
 				return "无";
