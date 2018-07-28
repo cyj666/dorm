@@ -13,16 +13,17 @@
 				<tr>
 					<th data-options="field:'ck',checkbox:true"></th>
 					<th data-options="field:'employeeId',width:30">系统ID</th>
-					<th data-options="field:'employeeName',width:80">员工姓名</th>
-					<th data-options="field:'employeeNo',width:80">工号</th>
+					<th data-options="field:'employeeName',width:50">员工姓名</th>
+					<th data-options="field:'employeeNo',width:50">工号</th>
 					<th data-options="field:'phoneNo',width:80">手机号码</th>
-					<th data-options="field:'employeeStatus',width:80" formatter="manageStatus">状态</th>
-					<th data-options="field:'employeeSex',width:80">性别</th>
-					<th data-options="field:'employeeJob',width:80">职位</th>
-					<th data-options="field:'employeeWorkplace',width:80">工作地点</th>
-					<th data-options="field:'employeeFamily',width:80">家属信息</th>
-					<th data-options="field:'employeeRemark',width:80">备注</th>
-					<th data-options="field:'room',width:80" formatter="managerRoom">住宿情况</th>
+					<th data-options="field:'employeeStatus',width:20" formatter="manageStatus">状态</th>
+					<th data-options="field:'employeeSex',width:20">性别</th>
+					<th data-options="field:'employeeJob',width:20">职位</th>
+					<th data-options="field:'employeeWorkplace',width:30">工作地点</th>
+					<th data-options="field:'employeeFamily',width:30">家属信息</th>
+					<th data-options="field:'employeeRemark',width:50">备注</th>
+					<th data-options="field:'log',width:80">个人日志</th>
+					<th data-options="field:'room',width:80" formatter="managerRoom">当前住宿情况</th>
 				</tr>
 			</thead>
 		</table>
@@ -36,9 +37,9 @@
 			<a href="#" class="easyui-linkbutton remove"
 			iconCls="icon-remove" onclick="del()" plain="true">删除</a> 
 			</shiro:hasRole>
-			<a href="#" class="easyui-linkbutton put" iconCls="icon-undo" onclick="import()"
+			<a href="#" class="easyui-linkbutton put" iconCls="icon-undo" onclick="put()"
 			plain="true">导入</a> <a href="#" class="easyui-linkbutton export"
-			iconCls="icon-redo" onclick="export()" plain="true">导出</a>		
+			iconCls="icon-redo" onclick="print()" plain="true">导出</a>		
 		<div>
 			员工姓名: <input class="easyui-textbox" id="employeeName"> 员工工号:
 			<input class="easyui-textbox" id="employeeNo"> 职位: <input
@@ -49,7 +50,18 @@
 				onclick="employeeReset()" iconCls="icon-cancel">清空</a>
 		</div>
 	</div>
-
+	
+	<div id="exceldlg" class="easyui-dialog" title="导入excel文件" 
+	data-options="modal:true" style="width: 300px; height: 200px;"
+		closed="true">
+		<form id="uploadExcel"  method="post" enctype="multipart/form-data">  
+   			选择文件：　<input id = "excel" name = "excel" class="easyui-filebox" style="width:200px" data-options="prompt:'请选择文件...'">  
+		</form> 
+		<div style="text-align: center; padding: 5px 0;">
+			<a id = "booten" href="javascript:void(0)" class="easyui-linkbutton"
+				onclick="uploadExcel()" style="width: 80px" id="tt">导入</a>
+		</div>
+		</div>
 
 	<div id="dlg" class="easyui-dialog" title="数据参数"
 		data-options="modal:true" style="width: 480px; height: 430px;"
@@ -344,7 +356,7 @@
 		}
 		function managerRoom(value, row, index) {
 			if (value != null) {
-				var arr = "当前居住在：" + value.roomNo;
+				var arr = value.factoryName+value.building+"栋"+value.unit+"单元"+value.roomNo;
 				return arr;
 			} else {
 				return "无";
@@ -365,6 +377,52 @@
 				return "无";
 			}
 		}
+	</script>
+	
+	<script type="text/javascript">
+	function put(){
+		$('#exceldlg').dialog('open').dialog('setTitle', '新建');
+	}
+	function uploadExcel() {
+		$("#uploadExcel").form('submit');
+	}
+	/* 配置导入框 */
+	$("#uploadExcel").form({
+		type : 'post',
+		url : '${pageContext.request.contextPath}/putExcel',
+		dataType : "json",
+		onSubmit: function() {
+			var fileName= $('#excel').filebox('getValue'); 
+			  //对文件格式进行校验  
+             var d1=/\.[^\.]+$/.exec(fileName);
+			if (fileName == "") {  
+			      $.messager.alert('Excel用户导入', '请选择将要上传的文件!'); 
+			      return false;  
+			 }else if(d1!=".xls"&&d1!=".xlsx"){
+				 $.messager.alert('提示','请选择xls或是xlsx格式文件！','info');  
+				 return false; 
+			 }
+			 $("#booten").linkbutton('disable');
+            return true;  
+        }, 
+		success : function(result) {
+			var result = eval('(' + result + ')');
+			if (result.success) {
+				$.messager.alert('提示!', '导入成功','info',
+						function() {
+							$("#booten").linkbutton('enable');
+							$('#importExcel').dialog('close');
+							$('#user').datagrid('reload');
+					    });
+			} else {
+				$.messager.confirm('提示',"导入失败!");
+				$("#booten").linkbutton('enable');
+			}
+		}
+	});
+	function print() {
+		window.location.href="${pageContext.request.contextPath}/printExcel";
+	}
 	</script>
 
 </body>

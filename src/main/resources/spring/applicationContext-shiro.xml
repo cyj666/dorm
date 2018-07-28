@@ -111,6 +111,7 @@
 		<property name="sessionIdCookie" ref="sessionIdCookie" />
 		<property name="cacheManager" ref="cacheManager" />
 		<property name="sessionListeners" ref="mySessionListener" />
+		 <property name="sessionIdUrlRewritingEnabled" value="false" />
 	</bean>
 
 	  <bean id="mySessionListener" class="com.dorm.listener.MySessionListener"></bean>

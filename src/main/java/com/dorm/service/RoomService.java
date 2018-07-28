@@ -1,5 +1,6 @@
 package com.dorm.service;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.dorm.pojo.Room;
@@ -34,5 +35,8 @@ public interface RoomService {
 	public List<String> getFloor(String factory,String building,String unit);
 	
 	public List<Room> getRoomDetails(Room room);
+	
+	
+	public boolean doExcel(InputStream inputStream);
 	
 }

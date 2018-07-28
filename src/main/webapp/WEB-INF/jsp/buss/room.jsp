@@ -23,7 +23,7 @@
 				<th data-options="field:'type',width:10">类型</th>
 				<th data-options="field:'size',width:10">房间规格</th>
 				<th data-options="field:'employees',width:10" formatter="manageEmployee">已住人数</th>
-				<th data-options="field:'remark',width:90">日志</th>
+				<th data-options="field:'remark',width:90">房间日志</th>
 			</tr>
 		</thead>
 	</table>
@@ -33,6 +33,9 @@
 		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="edit()" plain="true">修改</a> 
 		<a href="#" class="easyui-linkbutton remove" iconCls="icon-remove"
 		 onclick="del()" plain="true">删除</a>
+		 <a href="#" class="easyui-linkbutton put" iconCls="icon-undo" onclick="put()"
+			plain="true">导入</a> <a href="#" class="easyui-linkbutton export"
+			iconCls="icon-redo" onclick="print()" plain="true">导出</a>	
 		<div>
 			房间号: <input class="easyui-textbox" id="paramRoomNo">
 			宿管: <input class="easyui-textbox" id="paramRoomAdmin">
@@ -42,6 +45,17 @@
 			<a href="#" class="easyui-linkbutton" onclick="doReset()" iconCls="icon-redo">重置</a>
 		</div>
 	</div>
+	<div id="exceldlg" class="easyui-dialog" title="导入excel文件" 
+	data-options="modal:true" style="width: 300px; height: 200px;"
+		closed="true">
+		<form id="uploadExcel"  method="post" enctype="multipart/form-data">  
+   			选择文件：　<input id = "excel" name = "excel" class="easyui-filebox" style="width:200px" data-options="prompt:'请选择文件...'">  
+		</form> 
+		<div style="text-align: center; padding: 5px 0;">
+			<a id = "booten" href="javascript:void(0)" class="easyui-linkbutton"
+				onclick="uploadExcel()" style="width: 80px" id="tt">导入</a>
+		</div>
+		</div>
 	<div id="dlg" class="easyui-dialog" title="数据参数" data-options="modal:true" style="width: 400px; height: 550px;" closed="true" buttons="#dlg-buttons">
 		<form method="post" id="fm">
 			<table cellpadding="9">
@@ -275,6 +289,50 @@
 			}
 		}
 	</script>
-	
+	<script type="text/javascript">
+	function put(){
+		$('#exceldlg').dialog('open').dialog('setTitle', '新建');
+	}
+	function uploadExcel() {
+		$("#uploadExcel").form('submit');
+	}
+	/* 配置导入框 */
+	$("#uploadExcel").form({
+		type : 'post',
+		url : '${pageContext.request.contextPath}/putExcel2',
+		dataType : "json",
+		onSubmit: function() {
+			var fileName= $('#excel').filebox('getValue'); 
+			  //对文件格式进行校验  
+             var d1=/\.[^\.]+$/.exec(fileName);
+			if (fileName == "") {  
+			      $.messager.alert('Excel用户导入', '请选择将要上传的文件!'); 
+			      return false;  
+			 }else if(d1!=".xls"&&d1!=".xlsx"){
+				 $.messager.alert('提示','请选择xls或是xlsx格式文件！','info');  
+				 return false; 
+			 }
+			 $("#booten").linkbutton('disable');
+            return true;  
+        }, 
+		success : function(result) {
+			var result = eval('(' + result + ')');
+			if (result.success) {
+				$.messager.alert('提示!', '导入成功','info',
+						function() {
+							$("#booten").linkbutton('enable');
+							$('#importExcel').dialog('close');
+							$('#user').datagrid('reload');
+					    });
+			} else {
+				$.messager.confirm('提示',"导入失败!");
+				$("#booten").linkbutton('enable');
+			}
+		}
+	});
+	function print() {
+		window.location.href="${pageContext.request.contextPath}/printExcel2";
+	}
+	</script>
 </body>
 </html>

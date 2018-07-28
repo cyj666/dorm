@@ -53,6 +53,7 @@ singleSelect="true" fitColumns="true" -->
 			单元: <input class="easyui-combobox" id="unit" style="width:100px">
 			楼层: <input class="easyui-combobox" id="floor" style="width:100px">
 			房间: <input class="easyui-combobox" id="room" style="width:100px">
+			年份: <input class="easyui-combobox" id="year" style="width:100px">
 			<!-- 时间: <input class="easyui-datebox" id="attYearMonth" style="width:100px">-->
 			<a href="#" class="easyui-linkbutton" onclick="doSearch()" iconCls="icon-search">查找</a>
 			<a href="#" class="easyui-linkbutton" onclick="doReset()" iconCls="icon-redo">重置</a>
@@ -250,7 +251,7 @@ singleSelect="true" fitColumns="true" -->
 			remoteSort : false,
 			pagination : true,
 			/*rownumbers : true*/
-			view: detailview,
+			/*view: detailview,*/
 			toolbar:"#toolbar", 
 			detailFormatter:function(index,row){
 				return '<div style="padding:2px;position:relative;"><table class="ddv"></table></div>';
@@ -327,7 +328,7 @@ singleSelect="true" fitColumns="true" -->
 	             $("#unit").combobox("setValue",''); //清空  
 	             $("#floor").combobox("setValue",''); //清空  
 	             $("#room").combobox("setValue",''); //清空 
-	             
+	             $("#year").combobox("setValue",''); //清空 
 	             var factory=record.text; /*$('#factory').combobox('getText');*//*.combobox('getValue'); */ //这些是选之前的字段，record是选之后的字段
 	             loadDataGrid({
 						'factoryName' : factory				
@@ -349,6 +350,7 @@ singleSelect="true" fitColumns="true" -->
 	     				$("#unit").combobox("setValue",''); //清空  
 	     				$("#floor").combobox("setValue",''); //清空  
 	     				$("#room").combobox("setValue",''); //清空 
+	     				$("#year").combobox("setValue",''); //清空 
 	     				 loadDataGrid({
 	 						'factoryName' : factory,
 	 						'building': building
@@ -368,6 +370,7 @@ singleSelect="true" fitColumns="true" -->
 	    	     				var unit = record.text;
 	    	     				$("#floor").combobox("setValue",''); //清空  
 	    	     				$("#room").combobox("setValue",''); //清空 
+	    	     				$("#year").combobox("setValue",''); //清空 
 	    	     				loadDataGrid({
 	    	 						'factoryName' : factory,
 	    	 						'building': building,
@@ -409,7 +412,18 @@ singleSelect="true" fitColumns="true" -->
 	    	    	    	 						'unit':unit,
 	    	    	    	 						'floor':floor,
 	    	    	    	 						'roomNo':record.text
-	    	    	    	 					});	    	    	    	     				
+	    	    	    	 					});	
+	    	    	    	     				$("#year").combobox({
+	    	    	    	     					editable:false, //不可编辑状态    
+	    	    	    	     		            cache: false,    
+	    	    	    	     		            panelHeight: '150',//自动高度适合
+	    	    	    	     					url:"getYear",
+	    	    	    	    	     			method:"get",
+	    	    	    	    	     			valueField:'id',  //返回数据中的id字段
+	    	    	    	    	     			textField:'text', //返回数据中的text字段
+	    	    	    	    	     			multiple:false,   //是否能选择多个
+	    	    	    	    	     			panelHeight:'auto',
+	    	    	    	     				})
 	    	    	    	     			}
 	    	    	     				})
 	    	    	     			}
@@ -441,7 +455,8 @@ singleSelect="true" fitColumns="true" -->
 					'building':  $('#building').combobox('getText'),
 					'unit': $('#unit').combobox('getText'),
 					'floor': $('#floor').combobox('getText'),
-					'roomNo': $('#room').combobox('getText')
+					'roomNo': $('#room').combobox('getText'),
+					'year': $('#year').combobox('getText')
 					};
 		loadDataGrid(queryCondition);
 	}
@@ -457,7 +472,8 @@ singleSelect="true" fitColumns="true" -->
 			'building':  $('#building').combobox('getText'),
 			'unit': $('#unit').combobox('getText'),
 			'floor': $('#floor').combobox('getText'),
-			'roomNo': $('#room').combobox('getText')
+			'roomNo': $('#room').combobox('getText'),
+			'year': $('#year').combobox('getText')
 			});
 	}
 	function create(){

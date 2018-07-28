@@ -17,7 +17,7 @@ public interface RoomEmployeeDetailsMapper {
 	
 	public List<RoomEmployeeDetails> getAllDetailsNow();  
 	public List<RoomEmployeeDetails> getAllHistoryDetails(); //只得到历史在住的信息
-	
+	public List<RoomEmployeeDetails> getSimpleDetail(RoomEmployeeDetails roomEmployeeDetails); 
 
 	public List<RoomEmployeeDetails> getDetails(RoomEmployeeDetails roomEmployeeDetails);
 	public List<RoomEmployeeDetails> getDetailsNow(RoomEmployeeDetails roomEmployeeDetails);

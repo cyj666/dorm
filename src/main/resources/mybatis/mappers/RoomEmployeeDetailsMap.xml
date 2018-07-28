@@ -68,6 +68,26 @@
 	AND er.date_out IS NULL
     </select>
     
+    <!-- 得到某个人是否在住 -->
+    <select id="getSimpleDetail" resultType="RoomEmployeeDetails" parameterType="roomEmployeeDetails" >
+   	SELECT * FROM employees_rooms 
+   	<where>
+		<if test="roomNo != null and roomNo !='' ">
+       	and room_no = #{roomNo}
+       	</if>
+       	<if test="employeeNo != null and employeeNo !='' ">
+       	and employee_no = #{employeeNo}
+       	</if>
+       	<if test="roomId != null and roomId !='' ">
+       	and room_id = #{roomId}
+       	</if>
+       	<if test="employeeId != null and employeeId !='' ">
+       	and employee_id = #{employeeId}
+       	</if>
+      		
+	</where>
+    </select>
+    
     <!-- 得到具体细节 -->
      <select id="getDetails" resultMap="detailMap" parameterType="roomEmployeeDetails">
    SELECT * FROM employees e RIGHT JOIN employees_rooms er ON e.employee_no = er.employee_no

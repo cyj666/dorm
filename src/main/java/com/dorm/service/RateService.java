@@ -11,4 +11,5 @@ public interface RateService {
 	public void addRate(Rate rate);
 	public void updateRate(Rate rate);
 	public void deleteRate(Rate rate);
+	public List<Rate> getYear();
 }

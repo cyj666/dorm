@@ -88,5 +88,8 @@
 		</where>
 	</update>
 
+	<select id="getYear" resultType="Rate" parameterType="Rate">
+		SELECT `year` FROM rate GROUP BY `year`
+	</select>
 
 </mapper>

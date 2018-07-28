@@ -137,7 +137,8 @@
 		<result property="roomNo" column="room_no" />
 		<result property="roomStatus" column="room_status" />
 		<association property="rate" javaType="com.dorm.pojo.Rate">
-		<id property="id" column="rate_id" />
+		<!--  <id property="id" column="rate_id" />-->
+		<id property="id" column="id1" />
 		<result property="year" column="year" />
 		<result property="jan" column="jan" />
 		<result property="feb" column="feb" />
@@ -167,14 +168,14 @@
 	</resultMap>
 	
 	<select id="getAllRoomDetails" resultMap="roomMap">
-		SELECT *,rate.id AS rate_id FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
-		LEFT JOIN employees e ON er.employee_no = e.employee_no
+		SELECT * FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no AND er.room_id = r.room_id
+		LEFT JOIN employees e ON er.employee_no = e.employee_no 
 		LEFT JOIN rate ON rate.room_id = r.room_id 
 		WHERE rate.`year` = YEAR 
 	</select>
 	
 	<select id="getRoomDetails" resultMap="roomMap" parameterType="room">
-		SELECT *,rate.id AS rate_id FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
+		SELECT * FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no AND er.room_id = r.room_id
 		LEFT JOIN employees e ON er.employee_no = e.employee_no
 		LEFT JOIN rate ON rate.room_id = r.room_id
 		<where>

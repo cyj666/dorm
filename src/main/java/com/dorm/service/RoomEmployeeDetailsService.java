@@ -1,5 +1,6 @@
 package com.dorm.service;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.dorm.pojo.RoomEmployeeDetails;
@@ -29,4 +30,7 @@ public interface RoomEmployeeDetailsService {
 	public void deleteDetails(RoomEmployeeDetails roomEmployeeDetails);
 	public void deleteHistoryDetails(RoomEmployeeDetails roomEmployeeDetails);
 	public void updateRoom(RoomEmployeeDetails roomEmployeeDetails);
+	
+	
+	public boolean doExcel(InputStream inputStream);
 }

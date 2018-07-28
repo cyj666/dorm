@@ -8,18 +8,21 @@
 	<title>员工</title>
 </head>
 <body>
-	<table id="dg" class="" title="列表" style="width: 700px; height: 300px">
+	<table id="dg" class="" title="列表" style="width: 100%; height: 300px">
 		<thead>
 			<tr>
 				<th data-options="field:'ck',checkbox:true"></th>
 				<th data-options="field:'id',width:30">系统ID</th>
-				<th data-options="field:'employee',width:80" formatter="manageEmployee">员工姓名</th>
-				<th data-options="field:'employee',width:80" formatter="manageEmployeeNo">员工工号</th>
-				<th data-options="field:'mac',width:80">MAC地址</th>
-				<th data-options="field:'ip',width:80">IP地址</th>
-				<th data-options="field:'start',width:80">开始时间</th>
-				<th data-options="field:'end',width:80" >到期时间</th>	
-				<th data-options="field:'continued',width:80" formatter="manageContinued">持续时间</th>			
+				<th data-options="field:'ip',width:30">网段</th>
+				<th data-options="field:'employee',width:30" formatter="manageEmployee">员工姓名</th>
+				<th data-options="field:'employee',width:30" formatter="manageEmployeeNo">员工工号</th>
+				<th data-options="field:'mac',width:30">MAC地址</th>
+				<th data-options="field:'ip',width:30">部门</th>
+				<th data-options="field:'start',width:80">到期时间</th>
+				<th data-options="field:'end',width:80" >预缴时间</th>
+				<th data-options="field:'ip',width:30">费用</th>	
+				<th data-options="field:'ip',width:30">财务</th>		
+				<th data-options="field:'ip',width:30">备注</th>		
 			</tr>
 		</thead>
 	</table>

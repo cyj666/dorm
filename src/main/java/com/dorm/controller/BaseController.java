@@ -1,15 +1,21 @@
 package com.dorm.controller;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -43,6 +49,9 @@ import com.dorm.service.RoomService;
 import com.dorm.service.UserService;
 import com.dorm.tool.CaptchaUtil;
 import com.dorm.tool.ImgUtil;
+
+import cn.hutool.Hutool;
+import cn.hutool.core.bean.BeanUtil;
 
 @Controller
 public class BaseController {
@@ -87,7 +96,109 @@ public class BaseController {
 	}
 	
 	
-	/*测试代码*/
+
+	/**
+	 * 测试
+	 */
+	@RequestMapping(value = "/test2", method = RequestMethod.GET,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public void test2(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		FileInputStream ins = new FileInputStream("D:\\test.txt");
+		//FileOutputStream fos = new FileOutputStream("D:\\test.txt", true);
+		//ServletInputStream sis = request.getInputStream();
+		ServletOutputStream sos = response.getOutputStream();
+		int a = 0;
+		while ((a=ins.read())!=-1) {
+			sos.write(a);	
+			System.out.println((char)a);
+		}
+		sos.flush();
+		sos.close();
+	}
+	
+	/**
+	 * 测试
+	 */
+	@RequestMapping(value = "/test3", method = RequestMethod.GET,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public void test3(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		FileInputStream ins = new FileInputStream("D:\\test.txt");
+		//FileOutputStream fos = new FileOutputStream("D:\\test.txt", true);
+		//ServletInputStream sis = request.getInputStream();
+		response.setContentType("application/x-msdownload;");
+		response.setHeader("Content-Disposition", "attachment;filename=test.txt");
+		ServletOutputStream sos = response.getOutputStream();
+		int a = 0;
+		while ((a=ins.read())!=-1) {
+			sos.write(a);	
+			System.out.println((char)a);
+		}
+		sos.flush();
+		sos.close();
+	}
+	
+	/**
+	 * 测试
+	 */
+	@RequestMapping(value = "/test4", method = RequestMethod.GET,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public void test4(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		//创建javaBean对象    
+        Object obj=null;
+        try {
+            obj=Employee.class.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        
+		Enumeration<String> enu = request.getParameterNames();
+		while(enu.hasMoreElements()) {
+			String name = enu.nextElement();
+			String value = request.getParameter(name);
+			try {
+				BeanUtils.setProperty(obj, name, value);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		 System.out.println(obj);
+	}
+	
+	
+	//约定前提： 请求中的参数名称 需要和javabean的属性名称保持一致！！！！
+	public static <T>T requestToBean(HttpServletRequest request , Class<T> clazz)
+    {
+        //创建javaBean对象    
+        Object obj=null;
+        try {
+            obj=clazz.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        
+        //得到请求中的每个参数
+        Enumeration<String> enu = request.getParameterNames();
+        while(enu.hasMoreElements())
+        {
+            //获得参数名
+            String name = enu.nextElement();
+            //获得参数值
+            String value = request.getParameter(name);
+            //然后把参数拷贝到javaBean对象中
+            try {
+                BeanUtils.setProperty(obj, name, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        return (T)obj;
+    }
+	
+	/*测试代码*/ 
 	/*@RequestMapping(value="/getDetils",produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getDetils() {

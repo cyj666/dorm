@@ -10,4 +10,5 @@ public interface RateMapper {
 	public void addRate(Rate rate);
 	public void deleteRate(Rate rate);
 	public void updateRate(Rate rate);
+	public List<Rate> getYear();
 }

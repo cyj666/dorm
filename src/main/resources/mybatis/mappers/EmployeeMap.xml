@@ -92,6 +92,9 @@
 			<if test="employeeStatus != null and employeeStatus !='' ">
 				and employee_status = #{employeeStatus}
 			</if>
+			<if test="log != null and log !='' ">
+				and log = #{log}
+			</if>
 		</where>
 	</select>
 
@@ -101,15 +104,16 @@
 	
 	<select id="getEmployeeByRoom" resultMap="employeeMap" parameterType="room">
 		SELECT  e.employee_family,e.employee_id,e.employee_job,e.employee_name,e.employee_no,
-e.employee_remark,e.employee_sex,e.employee_status,e.employee_workplace,e.phone_no,
+e.employee_remark,e.employee_sex,e.employee_status,e.employee_workplace,e.phone_no,e.log,
 r.building,r.factory_name,r.floor,r.remark,r.room_admin,r.room_id,r.room_no,r.room_status,
-r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no
+r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er.room_no AND r.room_id = er.room_id
 		LEFT JOIN employees e ON er.employee_no = e.employee_no
 		WHERE r.factory_name = #{factoryName}
 		AND r.building = #{building}
 		AND r.unit=#{unit}
 		AND r.floor=#{floor}
 		AND r.room_no = #{roomNo}
+		AND r.room_id = #{roomId}
 	</select>
 
 
@@ -124,6 +128,7 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 		<result property="employeeNo" column="employee_no" />
 		<result property="phoneNo" column="phone_no" />
 		<result property="employeeStatus" column="employee_status" />
+		<result property="log" column="log" />
 		<!-- 进行 多表关联插叙，关联房间 -->
 		<association property="room" column="room" javaType="com.dorm.pojo.Room">
 			<id property="roomId" column="room_id" />
@@ -144,7 +149,7 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 		select * from
 		employees e LEFT JOIN employees_rooms er ON e.employee_no =
 		er.employee_no
-		LEFT JOIN rooms r ON er.room_no = r.room_no
+		LEFT JOIN rooms r ON er.room_no = r.room_no AND r.room_id = er.room_id
 		WHERE er.date_out IS NULL
 	</select>
 	
@@ -152,7 +157,7 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 		select * from
 		employees e LEFT JOIN employees_rooms er ON e.employee_no =
 		er.employee_no
-		LEFT JOIN rooms r ON er.room_no = r.room_no
+		LEFT JOIN rooms r ON er.room_no = r.room_no AND r.room_id = er.room_id
 		WHERE er.date_out IS NULL  and r.room_id IS NULL
 	</select>
 	
@@ -160,7 +165,7 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 		select * from
 		employees e LEFT JOIN employees_rooms er ON e.employee_no =
 		er.employee_no
-		LEFT JOIN rooms r ON er.room_no = r.room_no 
+		LEFT JOIN rooms r ON er.room_no = r.room_no AND r.room_id = er.room_id
 		<where>
 			<if test="employeeId != null and employeeId !='' ">
 				and e.employee_id = #{employeeId}
@@ -191,6 +196,9 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 			</if>
 			<if test="employeeStatus != null and employeeStatus !='' ">
 				and employee_status = #{employeeStatus}
+			</if>
+			<if test="log != null and log !='' ">
+				and log = #{log}
 			</if>
 			and er.date_out IS NULL 
 		</where>
@@ -200,7 +208,7 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 		select * from
 		employees e LEFT JOIN employees_rooms er ON e.employee_no =
 		er.employee_no
-		LEFT JOIN rooms r ON er.room_no = r.room_no 
+		LEFT JOIN rooms r ON er.room_no = r.room_no AND r.room_id = er.room_id
 		<where>
 			<if test="employeeId != null and employeeId !='' ">
 				and e.employee_id = #{employeeId}
@@ -231,6 +239,9 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 			</if>
 			<if test="employeeStatus != null and employeeStatus !='' ">
 				and employee_status = #{employeeStatus}
+			</if>
+			<if test="log != null and log !='' ">
+				and log = #{log}
 			</if>
 			and er.date_out IS NULL and r.room_id IS NULL
 		</where>
@@ -241,18 +252,18 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 	<insert id="addEmployee" useGeneratedKeys="true" keyProperty="employee_id"
 		parameterType="employee">
 		insert into
-		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no,phone_no,employee_status)
-		values(#{employeeName},#{employeeSex},#{employeeJob},#{employeeWorkplace},#{employeeFamily},#{employeeRemark},#{employeeNo},#{phoneNo},#{employeeStatus})
+		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no,phone_no,employee_status,log)
+		values(#{employeeName},#{employeeSex},#{employeeJob},#{employeeWorkplace},#{employeeFamily},#{employeeRemark},#{employeeNo},#{phoneNo},#{employeeStatus},#{log})
 	</insert>
 
 	<insert id="addEmployeeByList" useGeneratedKeys="true"
 		parameterType="java.util.List">
 		insert into
-		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no,phone_no,employee_status)
+		employees(employee_name,employee_sex,employee_job,employee_workplace,employee_family,employee_remark,employee_no,phone_no,employee_status,log)
 		values
 		<foreach collection="list" item="e" index="i" separator=",">
 			(#{e.employeeName},#{e.employeeSex},#{e.employeeJob},#{e.employeeWorkplace},#{e.employeeFamily},
-			#{e.employeeRemark},#{e.employeeNo},#{phoneNo},#{employeeStatus})
+			#{e.employeeRemark},#{e.employeeNo},#{phoneNo},#{employeeStatus},#{log})
 		</foreach>
 	</insert>
 
@@ -316,6 +327,9 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 			<if test="employeeStatus != null and employeeStatus !='' ">
 				employee_status = #{employeeStatus},
 			</if>
+			<if test="log != null and log !='' ">
+				log = #{log},
+			</if>
 		</set>
 		<where>
 			employee_id = #{employeeId}
@@ -369,6 +383,11 @@ r.size,r.type,r.unit FROM rooms r LEFT JOIN employees_rooms er ON r.room_no = er
 			<foreach collection="list" item="e" index="i" separator=" "
 				open="case employee_id" close="end">
 				when #{e.employeeId} then #{e.employeeStatus }
+			</foreach>
+			,log =
+			<foreach collection="list" item="e" index="i" separator=" "
+				open="case employee_id" close="end">
+				when #{e.employeeId} then #{e.log }
 			</foreach>
 		</set>
 		<where>

@@ -1,5 +1,6 @@
 package com.dorm.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -113,5 +114,30 @@ public class RateController {
 		return r;
 	}
 	
+	
+	@RequestMapping(value="/getYear",produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getYear() {		
+		List<Rate> rates = rateService.getYear();
+		List<Integer> rList = new ArrayList<>();
+		StringBuffer sb = new StringBuffer();
+		sb.append("[{");
+		if (rates.size()==0) {
+			sb.append("}]");
+			return sb.toString();
+		}
+		for (Rate r : rates) {
+			rList.add(r.getYear());
+		}
+		for (Integer r : rList) {
+			sb.append("\"id\":"+(rList.indexOf(r)+1)+",");
+			sb.append("\"text\":"+"\""+r+"\""+"}");
+			if (rList.indexOf(r)!=rList.size()-1) {
+				sb.append(",{");
+			}
+		}
+		sb.append("]");
+		return sb.toString();
+	}
 	
 }

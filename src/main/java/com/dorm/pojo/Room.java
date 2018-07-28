@@ -20,7 +20,7 @@ public class Room implements Serializable {
 	private Integer size; //房间容纳的人数
 	private List<Employee> employees; //住宿的员工
 	private String roomAdmin;  //宿管
-	private Integer roomStatus;
+	private Integer roomStatus = 1;
 	private Rate rate;
 	public Integer getRoomId() {
 		return roomId;

@@ -1,5 +1,6 @@
 package com.dorm.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,11 +8,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -24,6 +32,12 @@ import com.dorm.service.RoomService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import junit.framework.Test;
 
 @Controller
@@ -180,28 +194,54 @@ public class RoomEmployeeDetailsController {
 			String result = "{\"success\":false,\"msg\":\""+msg+"\"}";
 			return result;
 		}
+		if (StringUtils.isEmpty(dateIn)) {
+			dateIn = DateUtil.formatDate(new Date());
+		}
 		RoomEmployeeDetails roomEmployeeDetails = new RoomEmployeeDetails();
 		roomEmployeeDetails.setEmployeeNo(employeeNo);
 		roomEmployeeDetails.setEmployeeId(employeeId);
 		roomEmployeeDetails.setRoomId(roomId);
 		roomEmployeeDetails.setRoomNo(roomNo);
+		roomEmployeeDetails.setDateIn(DateUtil.parseDate(dateIn));  //入住日期
 		roomEmployeeDetailsService.addDetails(roomEmployeeDetails);
 		Employee employee = employeeService.getEmployeeById(employeeId);
-		
-		/*处理日志*/
+		/*处理房间日志*/
 		String remark = room.getRemark();
-		String[] rs = remark.split(",");
+		/*String[] rs = remark.split(",");
 		if (rs.length==10) {  //如果大于10条
 			rs = Arrays.copyOfRange(rs, 1, 10);
+		}*/
+		if (StringUtils.isNotEmpty(remark)&&remark.length()>100) {
+			remark = remark.substring(remark.indexOf(","));
 		}
-		remark = Arrays.toString(rs);		
-		room.setRemark(remark.substring(1, remark.length()-1)+",员工("+employee.getEmployeeName()+"+工号"+employeeNo+")在"+dateIn+"入住该寝室,");	
+		//remark = Arrays.toString(rs);		
+		//room.setRemark(remark.substring(1, remark.length()-1)+"<br>,员工("+employee.getEmployeeName()+"+工号"+employeeNo+")在"+dateIn+"入住该寝室,");	
+		if (StringUtils.isEmpty(remark)) {
+			room.setRemark("员工("+employee.getEmployeeName()+"+工号"+employeeNo+")在"+dateIn+"<span style='color:green'>入住</span>,");
+		}else {
+			room.setRemark(remark+"<br>员工("+employee.getEmployeeName()+"+工号"+employeeNo+")在"+dateIn+"<span style='color:green'>入住</span>,");
+		}
 		roomService.updateRoom(room);
+		/*处理员工日志*/
+		String log = employee.getLog();
+		if (StringUtils.isNotEmpty(log)&&log.length()>100) {
+			log = log.substring(log.indexOf(","));
+		}
+		if (StringUtils.isEmpty(log)) {
+			employee.setLog(dateIn+"<span style='color:green'>入住</span>"
+					+ room.getFactoryName()+room.getUnit()+"单元"+roomNo+",");
+		}else {
+			employee.setLog(log+"<br>"+dateIn+"<span style='color:green'>入住</span>"
+					+ room.getFactoryName()+room.getUnit()+"单元"+roomNo+",");
+		}
+		employeeService.updateEmployee(employee);
+		/*结束*/
 		String msg ="工号"+employeeNo+"的员工成功添加到宿舍"+roomNo+"，添加成功";
 		String result = "{\"success\":true,\"msg\":\""+msg+"\"}";
 		return result;
 	}
 	
+
 	/*@org.junit.Test
 	public void Test() {
 		String[] arrs = {"A","B","C"};
@@ -281,16 +321,45 @@ public class RoomEmployeeDetailsController {
 		roomEmployeeDetailsService.deleteDetails(details);
 		Room room = roomService.getRoomById(roomId);
 		Employee employee = employeeService.getEmployeeById(employeeId);
-		
+		if (StringUtils.isEmpty(dateIn)) {
+			dateIn = DateUtil.formatDate(new Date());
+		}
 		/*处理日志*/
 		String remark = room.getRemark();
-		String[] rs = remark.split(";");
+		/*String[] rs = remark.split(",");
 		if (rs.length==10) {  //如果大于10条
 			rs = Arrays.copyOfRange(rs, 1, 10);
+		}*/
+		if (StringUtils.isNotEmpty(remark)&&remark.length()>100) {
+			remark = remark.substring(remark.indexOf(","));
 		}
-		remark = Arrays.toString(rs);				
-		room.setRemark(remark.substring(1, remark.length()-1)+",员工("+employee.getEmployeeName()+",工号"+employeeNo+")在"+dateIn+"搬出该寝室;");	
-		roomService.updateRoom(room);
+		//remark = Arrays.toString(rs);		
+		//room.setRemark(remark.substring(1, remark.length()-1)+"<br>,员工("+employee.getEmployeeName()+"+工号"+employeeNo+")在"+dateIn+"入住该寝室,");	
+		if (StringUtils.isEmpty(remark)) {
+			room.setRemark("员工("+employee.getEmployeeName()+"+工号"+employeeNo+")在"+dateIn+"<span style='color:red'>搬出</span>"
+		+",");
+		}else {
+			room.setRemark(remark+"<br>员工("+employee.getEmployeeName()+"+工号"+employeeNo+")在"+dateIn+"<span style='color:red'>搬出</span>"
+					+ ",");
+		}
+		roomService.updateRoom(room);  //修改房间表的记录
+		roomEmployeeDetailsService.deleteDetails(details);  //删除中间表内容
+		
+		
+		/*处理员工日志*/
+		String log = employee.getLog();
+		if (StringUtils.isNotEmpty(log)&&log.length()>100) {
+			log = log.substring(log.indexOf(","));
+		}
+		if (StringUtils.isEmpty(remark)) {
+			employee.setLog(dateIn+"<span style='color:red'>搬出</span>"
+					+ room.getFactoryName()+room.getUnit()+"单元"+roomNo+",");
+		}else {
+			employee.setLog(log+"<br>"+dateIn+"<span style='color:red'>搬出</span>"
+					+ room.getFactoryName()+room.getUnit()+"单元"+roomNo+",");
+		}
+		employeeService.updateEmployee(employee);
+		/*END*/
 		/*for (RoomEmployeeDetails r : list) {
 			r.setDateOut(new Date());
 			//roomEmployeeDetailsService.updateRoom(r);  //注释掉之前的写法，尝试改用新的方法
@@ -326,5 +395,36 @@ public class RoomEmployeeDetailsController {
 		String result = "{\"success\":true,\"msg\":\"删除成功！\"}";
 		return result;
 	}*/
+	
+	@RequestMapping(value="/putExcel3",method= {RequestMethod.POST},produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String putExcel(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value="excel")CommonsMultipartFile excel) throws IOException {
+		JSONObject job = JSONUtil.createObj();
+		if(roomEmployeeDetailsService.doExcel(excel.getInputStream())) {
+			job.put("success", Boolean.TRUE);
+			return job.toString();
+		}else {
+		job.put("success", Boolean.FALSE);
+		return job.toString();
+		}
+		
+	}
+		
+	@RequestMapping(value="/printExcel3",method= {RequestMethod.POST,RequestMethod.GET})
+	public void printExcel(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		ServletOutputStream out = response.getOutputStream(); 
+		String downloadFielName = new String((DateUtil.now()+".xlsx").getBytes("UTF-8"),"UTF-8");
+		//response为HttpServletResponse对象
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+		//test.xlsx是弹出下载对话框的文件名，不能为中文，中文请自行编码
+		response.setHeader("Content-Disposition","attachment;filename=test.xlsx");
+		 List<RoomEmployeeDetails> details = roomEmployeeDetailsService.getAllDetails(); 
+		 //List<Employee> rows = CollUtil.newArrayList(employees);
+		 ExcelWriter writer = ExcelUtil.getWriter(true);
+		 writer.write(details);
+		 writer.flush(out);
+		 writer.close();    
+	}
 	
 }

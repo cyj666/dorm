@@ -1,7 +1,9 @@
 package com.dorm.service;
 
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import com.dorm.mapper.RoomMapper;
 import com.dorm.pojo.Employee;
 import com.dorm.pojo.Room;
 import com.dorm.pojo.RoomEmployeeDetails;
+
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.sax.handler.RowHandler;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -237,6 +242,616 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public List<Employee> getEmployeesDetail2(Employee employee) {
 		// TODO Auto-generated method stub
 		return employeeMapper.getEmployeesDetail2(employee);
+	}
+
+	@Override
+	public boolean doExcel(InputStream inputStream) {
+		// TODO Auto-generated method stub
+			ExcelUtil.read07BySax(/*"d:/7月住宿人员名单（总）(1).xlsx"*/inputStream, -1, new RowHandler() {
+				
+				String employeeWorkplace = null;
+				String employeeNo = null;
+				String employeeName = null;
+				String employeeRemark = null;
+				Employee employee = new Employee();
+				
+				@Override
+				public void handle(int sheetIndex, int rowIndex, List<Object> rowList) {
+					// TODO Auto-generated method stub
+					switch (sheetIndex) {
+					case 0:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(14);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");									
+								}else {
+									System.out.println("数据重复！添加失败！");								
+								}
+							}
+							//*处理同一行的第二条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(4))&&
+									StringUtils.isNotEmpty((String) rowList.get(5))&&
+									StringUtils.isNotEmpty((String) rowList.get(6))) {
+								employeeWorkplace = (String) rowList.get(4);
+								employeeNo =  (String) rowList.get(5);
+								employeeName =  (String) rowList.get(6);
+								if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+									employeeRemark = (String) rowList.get(14);
+								}else {
+									employeeRemark = (String) rowList.get(13);
+								}	
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							//*处理同一行的第三条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(7))&&
+									StringUtils.isNotEmpty((String) rowList.get(8))&&
+									StringUtils.isNotEmpty((String) rowList.get(9))) {
+								employeeWorkplace = (String) rowList.get(7);
+								employeeNo =  (String) rowList.get(8);
+								employeeName =  (String) rowList.get(9);
+								if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+									employeeRemark = (String) rowList.get(14);
+								}else {
+									employeeRemark = (String) rowList.get(13);
+								}	
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}						
+						//处理同一行的第四条数据
+						if (StringUtils.isNotEmpty((String) rowList.get(10))&&
+								StringUtils.isNotEmpty((String) rowList.get(11))&&
+								StringUtils.isNotEmpty((String) rowList.get(12))) {
+							employeeWorkplace = (String) rowList.get(10);
+							employeeNo =  (String) rowList.get(11);
+							employeeName =  (String) rowList.get(12);
+							if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+								employeeRemark = (String) rowList.get(14);
+							}else {
+								employeeRemark = (String) rowList.get(13);
+							}	
+							employee.setEmployeeWorkplace(employeeWorkplace);
+							employee.setEmployeeNo(employeeNo);
+							employee.setEmployeeName(employeeName);
+							employee.setEmployeeRemark(employeeRemark);
+							employee.setEmployeeSex(null);
+							if (getEmployeeByNo(employeeNo)==null) {
+								addEmployee(employee);
+								System.out.println("添加成功！");
+							}else {
+								System.out.println("数据重复！添加失败！");
+							}
+						}							
+					}
+						break;
+					case 1:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//*处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(14);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							//*处理同一行的第二条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(4))&&
+									StringUtils.isNotEmpty((String) rowList.get(5))&&
+									StringUtils.isNotEmpty((String) rowList.get(6))) {
+								employeeWorkplace = (String) rowList.get(4);
+								employeeNo =  (String) rowList.get(5);
+								employeeName =  (String) rowList.get(6);
+								if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+									employeeRemark = (String) rowList.get(14);
+								}else {
+									employeeRemark = (String) rowList.get(13);
+								}	
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							//*处理同一行的第三条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(7))&&
+									StringUtils.isNotEmpty((String) rowList.get(8))&&
+									StringUtils.isNotEmpty((String) rowList.get(9))) {
+								employeeWorkplace = (String) rowList.get(7);
+								employeeNo =  (String) rowList.get(8);
+								employeeName =  (String) rowList.get(9);
+								if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+									employeeRemark = (String) rowList.get(14);
+								}else {
+									employeeRemark = (String) rowList.get(13);
+								}	
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}					
+						//*处理同一行的第三条数据
+						if (StringUtils.isNotEmpty((String) rowList.get(10))&&
+								StringUtils.isNotEmpty((String) rowList.get(11))&&
+								StringUtils.isNotEmpty((String) rowList.get(12))) {
+							employeeWorkplace = (String) rowList.get(10);
+							employeeNo =  (String) rowList.get(11);
+							employeeName =  (String) rowList.get(12);
+							if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+								employeeRemark = (String) rowList.get(14);
+							}else {
+								employeeRemark = (String) rowList.get(13);
+							}	
+							employee.setEmployeeWorkplace(employeeWorkplace);
+							employee.setEmployeeNo(employeeNo);
+							employee.setEmployeeName(employeeName);
+							employee.setEmployeeRemark(employeeRemark);
+							employee.setEmployeeSex(null);
+							if (getEmployeeByNo(employeeNo)==null) {
+								addEmployee(employee);
+								System.out.println("添加成功！");
+							}else {
+								System.out.println("数据重复！添加失败！");
+							}
+						}								
+					}
+						break;
+					case 2:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=2) {  //从第2行开始计算
+							//*处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);								
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							if (StringUtils.isNotEmpty((String) rowList.get(4))&&
+									StringUtils.isNotEmpty((String) rowList.get(5))&&
+									StringUtils.isNotEmpty((String) rowList.get(6))) {
+								employeeWorkplace = (String) rowList.get(4);
+								employeeNo =  (String) rowList.get(5);
+								employeeName =  (String) rowList.get(6);								
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							
+							if (StringUtils.isNotEmpty((String) rowList.get(9))&&
+									StringUtils.isNotEmpty((String) rowList.get(10))&&
+									StringUtils.isNotEmpty((String) rowList.get(11))) {
+								employeeWorkplace = (String) rowList.get(9);
+								employeeNo =  (String) rowList.get(10);
+								employeeName =  (String) rowList.get(11);								
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							
+							if (StringUtils.isNotEmpty((String) rowList.get(12))&&
+									StringUtils.isNotEmpty((String) rowList.get(13))&&
+									StringUtils.isNotEmpty((String) rowList.get(14))) {
+								employeeWorkplace = (String) rowList.get(12);
+								employeeNo =  (String) rowList.get(13);
+								employeeName =  (String) rowList.get(14);								
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}		
+						}
+					
+						break;
+						
+					case 3:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//*处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(14);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							//*处理同一行的第二条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(4))&&
+									StringUtils.isNotEmpty((String) rowList.get(5))&&
+									StringUtils.isNotEmpty((String) rowList.get(6))) {
+								employeeWorkplace = (String) rowList.get(4);
+								employeeNo =  (String) rowList.get(5);
+								employeeName =  (String) rowList.get(6);
+								if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+									employeeRemark = (String) rowList.get(14);
+								}else {
+									employeeRemark = (String) rowList.get(13);
+								}	
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							//*处理同一行的第三条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(7))&&
+									StringUtils.isNotEmpty((String) rowList.get(8))&&
+									StringUtils.isNotEmpty((String) rowList.get(9))) {
+								employeeWorkplace = (String) rowList.get(7);
+								employeeNo =  (String) rowList.get(8);
+								employeeName =  (String) rowList.get(9);
+								if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+									employeeRemark = (String) rowList.get(14);
+								}else {
+									employeeRemark = (String) rowList.get(13);
+								}	
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}					
+						//*处理同一行的第三条数据
+						if (StringUtils.isNotEmpty((String) rowList.get(10))&&
+								StringUtils.isNotEmpty((String) rowList.get(11))&&
+								StringUtils.isNotEmpty((String) rowList.get(12))) {
+							employeeWorkplace = (String) rowList.get(10);
+							employeeNo =  (String) rowList.get(11);
+							employeeName =  (String) rowList.get(12);
+							if (StringUtils.isNotEmpty((String) rowList.get(14))) {
+								employeeRemark = (String) rowList.get(14);
+							}else {
+								employeeRemark = (String) rowList.get(13);
+							}	
+							employee.setEmployeeWorkplace(employeeWorkplace);
+							employee.setEmployeeNo(employeeNo);
+							employee.setEmployeeName(employeeName);
+							employee.setEmployeeRemark(employeeRemark);
+							employee.setEmployeeSex(null);
+							if (getEmployeeByNo(employeeNo)==null) {
+								addEmployee(employee);
+								System.out.println("添加成功！");
+							}else {
+								System.out.println("数据重复！添加失败！");
+							}
+						}								
+					}
+						break;
+					case 4:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(11);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeSex((String) rowList.get(10));
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");									
+								}else {
+									System.out.println("数据重复！添加失败！");								
+								}
+							}
+							//*处理同一行的第二条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(4))&&
+									StringUtils.isNotEmpty((String) rowList.get(5))&&
+									StringUtils.isNotEmpty((String) rowList.get(6))) {
+								employeeWorkplace = (String) rowList.get(4);
+								employeeNo =  (String) rowList.get(5);
+								employeeName =  (String) rowList.get(6);
+								employeeRemark = (String) rowList.get(11);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex((String) rowList.get(10));
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}
+							//*处理同一行的第三条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(7))&&
+									StringUtils.isNotEmpty((String) rowList.get(8))&&
+									StringUtils.isNotEmpty((String) rowList.get(9))) {
+								employeeWorkplace = (String) rowList.get(7);
+								employeeNo =  (String) rowList.get(8);
+								employeeName =  (String) rowList.get(9);
+								employeeRemark = (String) rowList.get(11);
+								employee.setEmployeeSex((String) rowList.get(10));
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");
+								}else {
+									System.out.println("数据重复！添加失败！");
+								}
+							}				
+						}
+						break;
+					case 5:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(5);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");									
+								}else {
+									System.out.println("数据重复！添加失败！");								
+								}
+							}
+						}
+						break;
+					case 6:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(5)+","+(String) rowList.get(6)+","+(String) rowList.get(7);
+								employee.setEmployeeFamily((String) rowList.get(4));
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");									
+								}else {
+									System.out.println("数据重复！添加失败！");								
+								}
+							}
+						}
+						break;
+					case 7:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(5);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");									
+								}else {
+									System.out.println("数据重复！添加失败！");								
+								}
+							}
+							if (StringUtils.isNotEmpty((String) rowList.get(4))&&
+									StringUtils.isNotEmpty((String) rowList.get(5))&&
+									StringUtils.isNotEmpty((String) rowList.get(6))) {
+								employeeWorkplace = (String) rowList.get(4);
+								employeeNo =  (String) rowList.get(5);
+								employeeName =  (String) rowList.get(6);
+								employeeRemark = (String) rowList.get(7);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");									
+								}else {
+									System.out.println("数据重复！添加失败！");								
+								}
+							}
+						}
+						break;
+					case 8:
+						System.out.println(sheetIndex+":"+rowIndex+":"+rowList.toString());
+						if (StringUtils.isEmpty((String) rowList.get(0))) {
+							break;
+						}
+						if (rowIndex>=3) {  //从第三行开始计算
+							//处理同一行的第一条数据
+							if (StringUtils.isNotEmpty((String) rowList.get(1))&&
+									StringUtils.isNotEmpty((String) rowList.get(2))&&
+									StringUtils.isNotEmpty((String) rowList.get(3))) {
+								employeeWorkplace = (String) rowList.get(1);
+								employeeNo =  (String) rowList.get(2);
+								employeeName =  (String) rowList.get(3);
+								employeeRemark = (String) rowList.get(5);
+								employee.setEmployeeWorkplace(employeeWorkplace);
+								employee.setEmployeeNo(employeeNo);
+								employee.setEmployeeName(employeeName);
+								employee.setEmployeeRemark(employeeRemark);
+								employee.setEmployeeSex(null);
+								if (getEmployeeByNo(employeeNo)==null) {
+									addEmployee(employee);
+									System.out.println("添加成功！");									
+								}else {
+									System.out.println("数据重复！添加失败！");								
+								}
+							}
+						}
+						break;
+					default:
+						break;
+					}
+					
+				}
+			});
+		
+		return true;
 	}
 
 }

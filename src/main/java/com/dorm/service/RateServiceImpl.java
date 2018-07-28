@@ -45,4 +45,10 @@ public class RateServiceImpl implements RateService {
 		rateMapper.deleteRate(rate);
 	}
 
+	@Override
+	public List<Rate> getYear() {
+		// TODO Auto-generated method stub
+		return rateMapper.getYear();
+	}
+
 }

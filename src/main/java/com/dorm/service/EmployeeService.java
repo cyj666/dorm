@@ -1,5 +1,6 @@
 package com.dorm.service;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.dorm.pojo.Employee;
@@ -42,4 +43,5 @@ public interface EmployeeService {
 	
 	public boolean isLive(String employeeNo);
 	
+	public boolean doExcel(InputStream inputStream);  //处理excel文件
 }

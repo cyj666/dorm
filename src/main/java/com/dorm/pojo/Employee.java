@@ -21,7 +21,9 @@ public class Employee implements Serializable {
 	
 	private String phoneNo;  //手机号码
 	
-	private Integer employeeStatus;
+	private Integer employeeStatus = 1;
+	
+	private String log;
 	
 	public Integer getEmployeeId() {
 		return employeeId;
@@ -97,12 +99,61 @@ public class Employee implements Serializable {
 	public void setEmployeeStatus(Integer employeeStatus) {
 		this.employeeStatus = employeeStatus;
 	}
-	@Override
+	/*@Override
 	public String toString() {
 		return "Employee [employeeId=" + employeeId + ", employeeNo=" + employeeNo + ", employeeName=" + employeeName
 				+ ", employeeSex=" + employeeSex + ", employeeJob=" + employeeJob + ", employeeWorkplace="
 				+ employeeWorkplace + ", employeeFamily=" + employeeFamily + ", employeeRemark=" + employeeRemark
 				+ ", room=" + room + ", phoneNo=" + phoneNo + ", employeeStatus=" + employeeStatus + "]";
+	}*/
+	public String getLog() {
+		return log;
+	}
+	public void setLog(String log) {
+		this.log = log;
+	}
+	@Override
+	public String toString() {
+		return "Employee [employeeId=" + employeeId + ", employeeNo=" + employeeNo + ", employeeName=" + employeeName
+				+ ", employeeSex=" + employeeSex + ", employeeJob=" + employeeJob + ", employeeWorkplace="
+				+ employeeWorkplace + ", employeeFamily=" + employeeFamily + ", employeeRemark=" + employeeRemark
+				+ ", room=" + room + ", phoneNo=" + phoneNo + ", employeeStatus=" + employeeStatus + ", log=" + log
+				+ "]";
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((employeeId == null) ? 0 : employeeId.hashCode());
+		result = prime * result + ((employeeName == null) ? 0 : employeeName.hashCode());
+		result = prime * result + ((employeeNo == null) ? 0 : employeeNo.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employee other = (Employee) obj;
+		if (employeeId == null) {
+			if (other.employeeId != null)
+				return false;
+		} else if (!employeeId.equals(other.employeeId))
+			return false;
+		if (employeeName == null) {
+			if (other.employeeName != null)
+				return false;
+		} else if (!employeeName.equals(other.employeeName))
+			return false;
+		if (employeeNo == null) {
+			if (other.employeeNo != null)
+				return false;
+		} else if (!employeeNo.equals(other.employeeNo))
+			return false;
+		return true;
 	}
 	
 	

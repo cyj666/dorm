@@ -1,7 +1,12 @@
 package com.dorm.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -19,6 +25,13 @@ import com.dorm.service.RoomEmployeeDetailsService;
 import com.dorm.service.RoomService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 
 @Controller
 public class RoomController {
@@ -63,9 +76,14 @@ public class RoomController {
 		room.setRoomAdmin(roomAdmin);
 		room.setSize(size);
 		room.setRoomStatus(roomStatus);
+		List<Room> test  = roomService.getRoomDetails(room);
+		for (Employee e : test.get(0).getEmployees()) {
+			System.err.println(e);
+		}
 		PageHelper.startPage(pageNum, pageSize);		
 		//List<Room> rooms = roomService.getRooms(room);  //先前的版本
 		List<Room> rooms = roomService.getRoomDetails(room);
+		
 		PageInfo<Room> p = new PageInfo<>(rooms);
 		long total = p.getTotal();
 		String json = JSON.toJSONString(p.getList(),SerializerFeature.WriteDateUseDateFormat);		
@@ -309,5 +327,37 @@ public class RoomController {
 		sb.append("]");
 		return sb.toString();
 	}
+	
+	@RequestMapping(value="/putExcel2",method= {RequestMethod.POST},produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String putExcel(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value="excel")CommonsMultipartFile excel) throws IOException {
+		
+		JSONObject job = JSONUtil.createObj();
+		if(roomService.doExcel(excel.getInputStream())) {
+			job.put("success", Boolean.TRUE);
+			return job.toString();
+		}else {
+		job.put("success", Boolean.FALSE);
+		return job.toString();
+		}
+	}
+		
+	@RequestMapping(value="/printExcel2",method= {RequestMethod.POST,RequestMethod.GET})
+	public void printExcel(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		ServletOutputStream out = response.getOutputStream(); 
+		String downloadFielName = new String((DateUtil.now()+".xlsx").getBytes("UTF-8"),"UTF-8");
+		//response为HttpServletResponse对象
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+		//test.xlsx是弹出下载对话框的文件名，不能为中文，中文请自行编码
+		response.setHeader("Content-Disposition","attachment;filename=test.xlsx");
+		 List<Room> rooms = roomService.getAllRoomDetails(); 
+		 //List<Employee> rows = CollUtil.newArrayList(employees);
+		 ExcelWriter writer = ExcelUtil.getWriter(true);
+		 writer.write(rooms);
+		 writer.flush(out);
+		 writer.close();    
+	}
+	
 	
 }

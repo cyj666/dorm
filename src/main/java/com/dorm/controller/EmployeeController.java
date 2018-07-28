@@ -1,14 +1,22 @@
 package com.dorm.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -20,7 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +41,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
@@ -40,10 +52,23 @@ import com.dorm.pojo.RoomEmployeeDetails;
 import com.dorm.pojo.User;
 import com.dorm.service.EmployeeService;
 import com.dorm.service.RoomEmployeeDetailsService;
+import com.dorm.service.RoomService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLDataException;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
+import cn.hutool.poi.excel.sax.handler.RowHandler;
 
 @Controller
 public class EmployeeController {
@@ -57,6 +82,12 @@ public class EmployeeController {
 	@Autowired
 	@Lazy
 	RoomEmployeeDetailsService roomEmployeeDetailsService;
+	
+	
+	@Autowired
+	@Lazy //延迟加载，为了使@RequiresPermissions注解生效
+	RoomService roomService;
+	
 	
 	
 	@RequiresUser
@@ -294,6 +325,7 @@ public class EmployeeController {
 		room.setUnit(unit);
 		room.setFloor(floor);
 		room.setRoomNo(roomNo);
+		room = roomService.getRooms(room).get(0); 
 		//employeeService.getEmployeeByRoom(room);
 		
 		/*PageHelper.startPage(pageNum, pageSize);
@@ -306,5 +338,69 @@ public class EmployeeController {
 		String JSON1 = "{\"total\":"+list.size()+",\"rows\":"+JSON.toJSONString(list,SerializerFeature.WriteDateUseDateFormat)+"}";
 		return JSON1;
 	}
+	
+	
+	@RequestMapping(value="/putExcel",method= {RequestMethod.POST},produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String putExcel(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value="excel")CommonsMultipartFile excel) throws IOException {
+		/*ExcelReader reader = ExcelUtil.getReader(excel.getInputStream());
+		FileUtils.copyInputStreamToFile(excel.getInputStream(), FileUtil.file("D:\\"+excel.getOriginalFilename()));
+		
+		List<List<Object>> readAll = reader.read();
+		JSONObject obj = JSONUtil.createObj();
+		if (readAll.size()>0) {
+			obj.put("success", Boolean.TRUE);
+			
+			
+		}else {
+			obj.put("success", Boolean.FALSE);
+		}
+		return obj.toString();*/
+		JSONObject job = JSONUtil.createObj();
+		if(employeeService.doExcel(excel.getInputStream())) {
+			job.put("success", Boolean.TRUE);
+			return job.toString();
+		}else {
+		job.put("success", Boolean.FALSE);
+		return job.toString();
+		}
+	}
+	
+	
+	
+	/*@RequestMapping(value="/printExcel",method= {RequestMethod.POST,RequestMethod.GET})
+	public ResponseEntity<byte[]> printExcel(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		HttpHeaders headers = new HttpHeaders();
+		ServletOutputStream out = response.getOutputStream();
+		InputStream in = new ByteArrayInputStream(new byte[10240]); 
+		String downloadFielName = new String((DateUtil.now()+".xlsx").getBytes("UTF-8"),"UTF-8");
+		 headers.setContentDispositionFormData("attachment", "1.xlsx"); 
+		 headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		 List<Employee> employees = employeeService.getAllEmployeeDetail();
+		 ExcelWriter writer = ExcelUtil.getWriter(true);
+		 writer.write(employees);
+		 writer.flush(out);
+		 writer.close();
+		 IoUtil.copy(in, out);
+		 return new ResponseEntity<byte[]>(IoUtil.readBytes(in),HttpStatus.CREATED);  
+	}*/
+	
+	@RequestMapping(value="/printExcel",method= {RequestMethod.POST,RequestMethod.GET})
+	public void printExcel(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		ServletOutputStream out = response.getOutputStream(); 
+		String downloadFielName = new String((DateUtil.now()+".xlsx").getBytes("UTF-8"),"UTF-8");
+		//response为HttpServletResponse对象
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+		//test.xlsx是弹出下载对话框的文件名，不能为中文，中文请自行编码
+		response.setHeader("Content-Disposition","attachment;filename=test.xlsx");
+		 List<Employee> employees = employeeService.getAllEmployeeDetail();		 
+		 //List<Employee> rows = CollUtil.newArrayList(employees);
+		 ExcelWriter writer = ExcelUtil.getWriter(true);
+		 writer.write(employees);
+		 writer.flush(out);
+		 writer.close();    
+	}
+	
 	
 }
