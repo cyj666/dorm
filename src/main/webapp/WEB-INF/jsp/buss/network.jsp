@@ -5,24 +5,25 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>员工</title>
+	<title>网络</title>
 </head>
 <body>
-	<table id="dg" class="" title="列表" style="width: 100%; height: 300px">
+	<table id="dg" class="" title="列表" style="width: 700px; height: 300px">
 		<thead>
 			<tr>
 				<th data-options="field:'ck',checkbox:true"></th>
-				<th data-options="field:'id',width:30">系统ID</th>
-				<th data-options="field:'ip',width:30">网段</th>
-				<th data-options="field:'employee',width:30" formatter="manageEmployee">员工姓名</th>
-				<th data-options="field:'employee',width:30" formatter="manageEmployeeNo">员工工号</th>
-				<th data-options="field:'mac',width:30">MAC地址</th>
-				<th data-options="field:'ip',width:30">部门</th>
-				<th data-options="field:'start',width:80">到期时间</th>
-				<th data-options="field:'end',width:80" >预缴时间</th>
-				<th data-options="field:'ip',width:30">费用</th>	
-				<th data-options="field:'ip',width:30">财务</th>		
-				<th data-options="field:'ip',width:30">备注</th>		
+				<th data-options="field:'id',width:10">系统ID</th>
+				<th data-options="field:'ip',width:10">IP</th>
+				<th data-options="field:'ip',width:10">网段</th>
+				<th data-options="field:'employee',width:10" formatter="manageEmployee">姓名</th>
+				<th data-options="field:'employee',width:10" formatter="manageEmployeeNo">工号</th>
+				<th data-options="field:'employee',width:10" formatter="manageEmployeeNo">部门</th>
+				<th data-options="field:'mac',width:10">MAC地址</th>
+				<th data-options="field:'start',width:10">到期时间</th>
+				<th data-options="field:'end',width:10" >预缴时间</th>
+				<th data-options="field:'ip',width:10">费用</th>	
+				<th data-options="field:'ip',width:10">财务</th>		
+				<th data-options="field:'ip',width:10">备注</th>		
 			</tr>
 		</thead>
 	</table>
@@ -31,6 +32,9 @@
 		<a href="#" class="easyui-linkbutton add" iconCls="icon-add" onclick="create()" plain="true">网络登记</a> 
 		<a href="#" class="easyui-linkbutton edit" iconCls="icon-edit" onclick="remove1()" plain="true">修改记录</a> 
 		<a href="#" class="easyui-linkbutton remove" iconCls="icon-cancel" onclick="del()" plain="true">删除记录</a>
+		<a href="#" class="easyui-linkbutton put" iconCls="icon-undo" onclick="put()"
+			plain="true">导入</a> <a href="#" class="easyui-linkbutton export"
+			iconCls="icon-redo" onclick="print()" plain="true">导出</a>
 		<div>
 			员工姓名: <input class="easyui-textbox" id="employeeName">
 			MAC: <input class="easyui-textbox" id="mac">
@@ -140,6 +144,18 @@
 	</div>
 	
 	
+	<div id="exceldlg" class="easyui-dialog" title="导入excel文件" 
+	data-options="modal:true" style="width: 300px; height: 200px;"
+		closed="true">
+		<form id="uploadExcel"  method="post" enctype="multipart/form-data">  
+   			选择文件：　<input id = "excel" name = "excel" class="easyui-filebox" style="width:200px" data-options="prompt:'请选择文件...'">  
+		</form> 
+		<div style="text-align: center; padding: 5px 0;">
+			<a id = "booten" href="javascript:void(0)" class="easyui-linkbutton"
+				onclick="uploadExcel()" style="width: 80px" id="tt">导入</a>
+		</div>
+		</div>
+	
 	<script type="text/javascript">
 	$(function() {  
 		loadDataGrid();
@@ -148,10 +164,10 @@
 		$('#'+dgrid).dialog('open').dialog('setTitle',dtittle);
 		loadEmployeeGrid();
 	}
-	function openRoomWin(dgrid,dtittle) {
+	/*function openRoomWin(dgrid,dtittle) {
 		$('#'+dgrid).dialog('open').dialog('setTitle',dtittle);
 		loadRoomGrid();
-	}
+	}*/
 	function detailsSearch(){
 		var queryCondition = {'employeeName':$('#employeeName').val(),'mac': $('#mac').val(),'ip': $('#ip').val(),'start': $('#start').val(),'end': $('#end').val()};
 		loadDataGridByQ(queryCondition);
@@ -167,7 +183,7 @@
 		$('#dg').datagrid({  
             title : '员工信息',  
             iconCls : 'icon-ok',  
-            pageSize : 5,//默认选择的分页是每页5行数据  
+            pageSize : 15,//默认选择的分页是每页5行数据  
             pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
             nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
             striped : true,//设置为true将交替显示行背景。  
@@ -176,7 +192,7 @@
             url:'getNet',//url调用Action方法  
             method:'get',
             loadMsg : '数据装载中......',  
-            singleSelect:false,//为true时只能选择单行  
+            singleSelect:true,//为true时只能选择单行  
             fitColumns:true,//允许表格自动缩放，以适应父容器  
             checkOnSelect:true,
             selectOnCheck:true,
@@ -191,7 +207,7 @@
 		 $('#dgEmployee').datagrid({  
 	            title : '员工信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,//默认选择的分页是每页5行数据  
+	            pageSize : 15,//默认选择的分页是每页5行数据  
 	            pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
 	            nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
 	            striped : true,//设置为true将交替显示行背景。  
@@ -211,11 +227,11 @@
 	            queryParams:queryConditon
 	        });   
 	}
-	function loadRoomGrid(){
+	/*function loadRoomGrid(){
 		 $('#dgRoom').datagrid({  
 	            title : '员工信息',  
 	            iconCls : 'icon-ok',  
-	            pageSize : 5,//默认选择的分页是每页5行数据  
+	            pageSize : 15,//默认选择的分页是每页5行数据  
 	            pageList : [ 5, 10, 15, 20 ],//可以选择的分页集合  
 	            nowrap : true,//设置为true，当数据长度超出列宽时将会自动截取  
 	            striped : true,//设置为true将交替显示行背景。  
@@ -233,8 +249,8 @@
 	            pagination : true,  
 	            rownumbers : true
 	        });   
-	}
-	function loadEmployeeGridByQ(queryConditon){
+	}*/
+	/*function loadEmployeeGridByQ(queryConditon){
 		 $('#dgRoom').datagrid({  
 	            title : '员工信息',  
 	            iconCls : 'icon-ok',  
@@ -258,8 +274,8 @@
 	            queryParams:queryConditon
 	        });   
 		 
-	}
-	function loadRoomGridByQ(queryConditon){
+	}*/
+	/*function loadRoomGridByQ(queryConditon){
 		 $('#dgEmployee').datagrid({  
 	            title : '宿舍信息',  
 	            iconCls : 'icon-ok',  
@@ -283,7 +299,7 @@
 	            queryParams:queryConditon
 	        });   
 		 
-	}
+	}*/
 	function afterSelect(targetDg,targetDlg,valueId,valueName){
 		var row = $("#"+targetDg).datagrid('getSelections');
 		if (row.length >= 1){
@@ -507,6 +523,52 @@
 		} else {
 			return "无";
 		}
+	}
+	
+	</script>
+	<script type="text/javascript">
+	function put(){
+		$('#exceldlg').dialog('open').dialog('setTitle', '新建');
+	}
+	function uploadExcel() {
+		$("#uploadExcel").form('submit');
+	}
+	/* 配置导入框 */
+	$("#uploadExcel").form({
+		type : 'post',
+		url : '${pageContext.request.contextPath}/putExcel4',
+		dataType : "json",
+		onSubmit: function() {
+			var fileName= $('#excel').filebox('getValue'); 
+			  //对文件格式进行校验  
+             var d1=/\.[^\.]+$/.exec(fileName);
+			if (fileName == "") {  
+			      $.messager.alert('Excel用户导入', '请选择将要上传的文件!'); 
+			      return false;  
+			 }else if(d1!=".xls"&&d1!=".xlsx"){
+				 $.messager.alert('提示','请选择xls或是xlsx格式文件！','info');  
+				 return false; 
+			 }
+			 $("#booten").linkbutton('disable');
+            return true;  
+        }, 
+		success : function(result) {
+			var result = eval('(' + result + ')');
+			if (result.success) {
+				$.messager.alert('提示!', '导入成功','info',
+						function() {
+							$("#booten").linkbutton('enable');
+							$('#importExcel').dialog('close');
+							$('#user').datagrid('reload');
+					    });
+			} else {
+				$.messager.confirm('提示',"导入失败!");
+				$("#booten").linkbutton('enable');
+			}
+		}
+	});
+	function print() {
+		window.location.href="${pageContext.request.contextPath}/printExcel4";
 	}
 	</script>
 	

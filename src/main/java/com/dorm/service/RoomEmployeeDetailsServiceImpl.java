@@ -852,9 +852,9 @@ public class RoomEmployeeDetailsServiceImpl implements RoomEmployeeDetailsServic
 					if (rowIndex>=3) { 
 						if (StringUtils.isNotEmpty((String) rowList.get(0))&&
 								NumberUtil.isInteger((String) rowList.get(0))) {
-							factoryName = "华一";
+							factoryName = "二分厂";
 							roomNo = (String) rowList.get(0);
-							building = 1;
+							building = 5;
 							unit = 1;
 							employeeName1 =  (String) rowList.get(3);
 							employeeNo1 = (String) rowList.get(2);							

@@ -14,6 +14,7 @@
     <result property="start" column="start"/>  
     <result property="end" column="end"/> 
     <result property="continued" column="continued"/> 
+    <result property="remark" column="remark"/> 
    <!-- 进行 多表关联插叙，关联员工 -->
 	<association property="employee"  javaType="com.dorm.pojo.Employee">
 		<id property="employeeId" column="employee_id" />

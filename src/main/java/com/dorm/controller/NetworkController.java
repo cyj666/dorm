@@ -1,8 +1,13 @@
 package com.dorm.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -24,6 +30,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 
 @Controller
 public class NetworkController {
@@ -136,8 +146,51 @@ public class NetworkController {
 		return result;
 	}
 	
-	@Test
-	public void test() {
-		System.out.println(DateUtil.betweenMonth(DateUtil.parseDate("2018-04-25"), DateUtil.parseDate("2018-10-25"), false));
+
+	@RequestMapping(value="/putExcel4",method= {RequestMethod.POST},produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String putExcel(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam(value="excel")CommonsMultipartFile excel) throws IOException {
+		/*ExcelReader reader = ExcelUtil.getReader(excel.getInputStream());
+		FileUtils.copyInputStreamToFile(excel.getInputStream(), FileUtil.file("D:\\"+excel.getOriginalFilename()));
+		
+		List<List<Object>> readAll = reader.read();
+		JSONObject obj = JSONUtil.createObj();
+		if (readAll.size()>0) {
+			obj.put("success", Boolean.TRUE);
+			
+			
+		}else {
+			obj.put("success", Boolean.FALSE);
+		}
+		return obj.toString();*/
+		JSONObject job = JSONUtil.createObj();
+		if(employeeService.doExcel(excel.getInputStream())) {
+			job.put("success", Boolean.TRUE);
+			return job.toString();
+		}else {
+		job.put("success", Boolean.FALSE);
+		return job.toString();
+		}
 	}
+	
+	@RequestMapping(value="/printExcel4",method= {RequestMethod.POST,RequestMethod.GET})
+	public void printExcel(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		ServletOutputStream out = response.getOutputStream(); 
+		String downloadFielName = new String((DateUtil.now()+".xlsx").getBytes("UTF-8"),"UTF-8");
+		//response为HttpServletResponse对象
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+		//test.xlsx是弹出下载对话框的文件名，不能为中文，中文请自行编码
+		response.setHeader("Content-Disposition","attachment;filename=test.xlsx");
+		 List<Employee> employees = employeeService.getAllEmployeeDetail();		 
+		 //List<Employee> rows = CollUtil.newArrayList(employees);
+		 ExcelWriter writer = ExcelUtil.getWriter(true);
+		 writer.write(employees);
+		 writer.flush(out);
+		 writer.close();    
+	}
+	
+	
+	
+	
 }

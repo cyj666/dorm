@@ -22,6 +22,8 @@ public class Network implements Serializable{
 	private Date start;  //开通日期
 	private Date end;   //到期日期
 	private Integer continued;  //持续时间
+	
+	private String remark; //备注 
 	public Employee getEmployee() {
 		return employee;
 	}
@@ -68,6 +70,12 @@ public class Network implements Serializable{
 	}
 	public void setId(Integer id) {
 		this.id = id;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	
 	
